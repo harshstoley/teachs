@@ -153,3 +153,51 @@ router.get('/students', ...auth, async (req, res) => {
 });
 
 module.exports = router;
+
+// GET /api/teacher/doubts-for-me
+router.get('/doubts-for-me', ...auth, async (req, res) => {
+  try {
+    const [rows] = await db.query(
+      `SELECT d.*, u.name as student_name FROM doubts d JOIN users u ON d.student_id = u.id
+       WHERE d.teacher_id = ? ORDER BY d.status ASC, d.created_at DESC`, [req.user.id]
+    );
+    res.json(rows);
+  } catch (err) { res.status(500).json({ error: 'Failed to fetch doubts' }); }
+});
+
+// GET /api/teacher/homework-submitted
+router.get('/homework-submitted', ...auth, async (req, res) => {
+  try {
+    const [rows] = await db.query(
+      `SELECT h.*, u.name as student_name FROM homework h JOIN users u ON h.student_id = u.id
+       WHERE h.teacher_id = ? AND h.status = 'submitted' ORDER BY h.submitted_at DESC`, [req.user.id]
+    );
+    res.json(rows);
+  } catch (err) { res.status(500).json({ error: 'Failed to fetch homework' }); }
+});
+
+// PUT /api/teacher/homework/:id/grade
+router.put('/homework/:id/grade', ...auth, async (req, res) => {
+  try {
+    const { grade, remarks } = req.body;
+    await db.query(
+      'UPDATE homework SET grade = ?, status = ?, remarks = ? WHERE id = ? AND teacher_id = ?',
+      [grade, 'graded', remarks || null, req.params.id, req.user.id]
+    );
+    res.json({ message: 'Homework graded' });
+  } catch (err) { res.status(500).json({ error: 'Failed to grade homework' }); }
+});
+
+// POST /api/teacher/schedule-class
+router.post('/schedule-class', ...auth, async (req, res) => {
+  try {
+    const { student_id, subject, day_of_week, start_time, duration_min, class_date } = req.body;
+    if (!student_id) return res.status(400).json({ error: 'Student required' });
+    await db.query(
+      `INSERT INTO schedules (student_id, teacher_id, subject, day_of_week, start_time, duration_min, is_active)
+       VALUES (?, ?, ?, ?, ?, ?, 1)`,
+      [student_id, req.user.id, subject || '', day_of_week || 1, start_time || '17:00', duration_min || 60]
+    );
+    res.status(201).json({ message: 'Class scheduled successfully' });
+  } catch (err) { res.status(500).json({ error: 'Failed to schedule class' }); }
+});
