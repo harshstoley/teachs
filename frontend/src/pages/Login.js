@@ -2,6 +2,14 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
+const LogoMark = () => (
+  <svg width="40" height="40" viewBox="0 0 100 100" fill="none">
+    <circle cx="50" cy="18" r="13" fill="#3B72F5"/>
+    <path d="M50 31 C50 31 18 42 18 55 C18 55 34 50 50 48 C66 50 82 55 82 55 C82 42 50 31 50 31Z" fill="#1A3A8F"/>
+    <rect x="44" y="48" width="12" height="30" rx="6" fill="#1A3A8F"/>
+  </svg>
+);
+
 export function Login() {
   const [role, setRole] = useState('student');
   const [form, setForm] = useState({ email: '', password: '' });
@@ -24,32 +32,42 @@ export function Login() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--navy)', display: 'flex', flexDirection: 'column' }}>
-      {/* Top nav */}
-      <div style={{ padding: '20px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <Link to="/" style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', fontWeight: 700, color: 'var(--white)', textDecoration: 'none' }}>
-          Teach<span style={{ color: 'var(--gold)' }}>s</span>
+    <div style={{ minHeight: '100vh', background: 'var(--ink)', display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden' }}>
+      {/* Background */}
+      <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 60% 70% at 70% 40%, rgba(59,114,245,0.12) 0%, transparent 60%)' }} />
+      <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(59,114,245,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(59,114,245,0.04) 1px,transparent 1px)', backgroundSize: '60px 60px' }} />
+
+      {/* Nav */}
+      <div style={{ padding: '20px 28px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'relative', zIndex: 1 }}>
+        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
+          <LogoMark />
+          <span style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', fontWeight: 700, color: 'white', letterSpacing: '-0.5px' }}>
+            Teach<span style={{ color: 'var(--amber2)' }}>s</span>
+          </span>
         </Link>
-        <Link to="/" style={{ color: 'var(--slate2)', fontSize: '0.9rem' }}>← Back to Home</Link>
+        <Link to="/" style={{ color: 'rgba(255,255,255,0.50)', fontSize: '0.88rem', display: 'flex', alignItems: 'center', gap: 6 }}>← Back to Home</Link>
       </div>
 
       {/* Main */}
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px 20px' }}>
-        <div style={{ width: '100%', maxWidth: 400 }}>
-          <div style={{ background: 'var(--white)', borderRadius: 24, padding: '36px 32px', boxShadow: '0 24px 80px rgba(0,0,0,0.3)' }}>
-            <h2 style={{ textAlign: 'center', marginBottom: 6, color: 'var(--text)' }}>Welcome to Teachs</h2>
-            <p style={{ textAlign: 'center', color: 'var(--text2)', fontSize: '0.9rem', marginBottom: 28 }}>Sign in to access your dashboard</p>
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px 20px', position: 'relative', zIndex: 1 }}>
+        <div style={{ width: '100%', maxWidth: 420 }}>
+          <div style={{ background: 'rgba(255,255,255,0.98)', borderRadius: 24, padding: '40px 36px', boxShadow: '0 32px 80px rgba(0,0,0,0.35)', border: '1px solid rgba(59,114,245,0.10)' }}>
+            <div style={{ textAlign: 'center', marginBottom: 28 }}>
+              <h2 style={{ color: 'var(--text)', marginBottom: 6, fontSize: '1.8rem' }}>Welcome Back</h2>
+              <p style={{ color: 'var(--text2)', fontSize: '0.88rem' }}>Sign in to access your dashboard</p>
+            </div>
 
             {/* Role Tabs */}
-            <div style={{ display: 'flex', gap: 8, marginBottom: 28, background: 'var(--cream2)', padding: 4, borderRadius: 12 }}>
+            <div style={{ display: 'flex', gap: 6, marginBottom: 28, background: 'var(--lavender)', padding: 5, borderRadius: 14 }}>
               {['student', 'teacher', 'admin'].map(r => (
                 <button key={r} onClick={() => setRole(r)} style={{
-                  flex: 1, padding: '9px 8px', borderRadius: 9, border: 'none', cursor: 'pointer',
-                  background: role === r ? 'var(--navy)' : 'transparent',
-                  color: role === r ? 'var(--white)' : 'var(--text2)',
-                  fontWeight: role === r ? 700 : 500, fontSize: '0.9rem',
+                  flex: 1, padding: '10px 8px', borderRadius: 10, border: 'none', cursor: 'pointer',
+                  background: role === r ? 'white' : 'transparent',
+                  color: role === r ? 'var(--sapphire)' : 'var(--text2)',
+                  fontWeight: role === r ? 700 : 500, fontSize: '0.88rem',
                   transition: 'all 0.2s', fontFamily: 'var(--font-body)',
                   textTransform: 'capitalize',
+                  boxShadow: role === r ? 'var(--shadow-sm)' : 'none',
                 }}>{r}</button>
               ))}
             </div>
@@ -58,51 +76,41 @@ export function Login() {
 
             <form onSubmit={submit}>
               <div className="form-group">
-                <label className="form-label">Email / Mobile</label>
-                <input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })}
-                  className="form-input" placeholder="your@email.com" required style={{ background: 'var(--cream)' }} />
+                <label className="form-label">Email Address</label>
+                <input type="email" value={form.email}
+                  onChange={e => setForm({ ...form, email: e.target.value })}
+                  className="form-input" placeholder="your@email.com" required
+                  style={{ background: 'var(--ice)' }} />
               </div>
-              <div className="form-group">
+              <div className="form-group" style={{ marginBottom: 24 }}>
                 <label className="form-label">Password</label>
-                <input type="password" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })}
-                  className="form-input" placeholder="••••••••" required style={{ background: 'var(--cream)' }} />
+                <input type="password" value={form.password}
+                  onChange={e => setForm({ ...form, password: e.target.value })}
+                  className="form-input" placeholder="••••••••" required
+                  style={{ background: 'var(--ice)' }} />
               </div>
               <button type="submit" disabled={loading} style={{
-                width: '100%', padding: '14px', background: 'var(--navy)', color: 'var(--white)',
+                width: '100%', padding: '14px',
+                background: loading ? 'var(--lavender2)' : 'linear-gradient(135deg, var(--sapphire) 0%, var(--sapphire2) 100%)',
+                color: loading ? 'var(--text3)' : 'white',
                 border: 'none', borderRadius: 12, fontWeight: 700, fontSize: '1rem',
-                cursor: 'pointer', marginTop: 8, transition: 'all 0.2s', fontFamily: 'var(--font-body)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                cursor: loading ? 'not-allowed' : 'pointer',
+                transition: 'all 0.2s', fontFamily: 'var(--font-body)',
+                boxShadow: loading ? 'none' : '0 6px 24px rgba(26,58,143,0.35)',
               }}>
-                {loading ? 'Signing in...' : 'Sign In →'}
+                {loading ? 'Signing in…' : `Sign In as ${role.charAt(0).toUpperCase() + role.slice(1)} →`}
               </button>
             </form>
 
-            <p style={{ textAlign: 'center', marginTop: 20, fontSize: '0.875rem', color: 'var(--text2)' }}>
-              Don't have an account? <Link to="/signup" style={{ color: 'var(--navy)', fontWeight: 700 }}>Sign Up</Link>
+            <p style={{ textAlign: 'center', marginTop: 22, fontSize: '0.875rem', color: 'var(--text2)' }}>
+              Don't have an account?{' '}
+              <Link to="/signup" style={{ color: 'var(--sapphire)', fontWeight: 700 }}>Sign Up</Link>
             </p>
           </div>
 
-          {/* Footer note */}
-          <p style={{ textAlign: 'center', color: 'var(--slate)', fontSize: '0.8rem', marginTop: 20 }}>
+          <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.28)', fontSize: '0.78rem', marginTop: 22 }}>
             India's #1 Dual-Teacher Tutoring Platform
           </p>
-        </div>
-      </div>
-
-      {/* Bottom */}
-      <div style={{ padding: '24px', borderTop: '1px solid rgba(212,168,83,0.1)' }}>
-        <div style={{ maxWidth: 400, margin: '0 auto' }}>
-          <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.3rem', fontWeight: 700, color: 'var(--white)', marginBottom: 10 }}>
-            Teach<span style={{ color: 'var(--gold)' }}>s</span>
-          </div>
-          <p style={{ color: 'var(--slate)', fontSize: '0.85rem', lineHeight: 1.7 }}>
-            India's first Dual-Teacher tutoring model. Two subject specialists, structured learning, and weekly progress tracking — built for every parent who wants more than just a tutor.
-          </p>
-          <div style={{ marginTop: 16, display: 'flex', gap: 24 }}>
-            {[['Home', '/'], ['Pricing', '/pricing'], ['Practice Tests', '/practice-tests']].map(([l, to]) => (
-              <Link key={to} to={to} style={{ color: 'var(--slate2)', fontSize: '0.85rem' }}>{l}</Link>
-            ))}
-          </div>
         </div>
       </div>
     </div>
@@ -126,37 +134,74 @@ export function Signup() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--navy)', display: 'flex', flexDirection: 'column' }}>
-      <div style={{ padding: '20px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <Link to="/" style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', fontWeight: 700, color: 'var(--white)', textDecoration: 'none' }}>Teach<span style={{ color: 'var(--gold)' }}>s</span></Link>
-        <Link to="/login" style={{ color: 'var(--slate2)', fontSize: '0.9rem' }}>Already have account? Login</Link>
+    <div style={{ minHeight: '100vh', background: 'var(--ink)', display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 50% 60% at 30% 50%, rgba(11,122,94,0.08) 0%, transparent 60%)' }} />
+      <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(59,114,245,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(59,114,245,0.04) 1px,transparent 1px)', backgroundSize: '60px 60px' }} />
+
+      <div style={{ padding: '20px 28px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'relative', zIndex: 1 }}>
+        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <LogoMark />
+          <span style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', fontWeight: 700, color: 'white', letterSpacing: '-0.5px' }}>Teach<span style={{ color: 'var(--amber2)' }}>s</span></span>
+        </Link>
+        <Link to="/login" style={{ color: 'rgba(255,255,255,0.50)', fontSize: '0.88rem' }}>Already have account? Login →</Link>
       </div>
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px 20px' }}>
-        <div style={{ width: '100%', maxWidth: 500 }}>
-          <div style={{ background: 'var(--white)', borderRadius: 24, padding: '36px 32px', boxShadow: '0 24px 80px rgba(0,0,0,0.3)' }}>
-            <h2 style={{ textAlign: 'center', marginBottom: 6 }}>Create Account</h2>
-            <p style={{ textAlign: 'center', color: 'var(--text2)', fontSize: '0.88rem', marginBottom: 24 }}>Pending admin approval after signup</p>
+
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px 20px', position: 'relative', zIndex: 1 }}>
+        <div style={{ width: '100%', maxWidth: 540 }}>
+          <div style={{ background: 'rgba(255,255,255,0.98)', borderRadius: 24, padding: '40px 36px', boxShadow: '0 32px 80px rgba(0,0,0,0.35)', border: '1px solid rgba(59,114,245,0.10)' }}>
+            <div style={{ textAlign: 'center', marginBottom: 28 }}>
+              <h2 style={{ color: 'var(--text)', marginBottom: 6, fontSize: '1.8rem' }}>Create Account</h2>
+              <p style={{ color: 'var(--text2)', fontSize: '0.88rem' }}>Pending admin approval after signup</p>
+            </div>
+
             {success ? (
-              <div style={{ textAlign: 'center', padding: '20px 0' }}>
-                <div style={{ fontSize: '3rem', marginBottom: 12 }}>🎉</div>
-                <h3 style={{ marginBottom: 8 }}>Registration Successful!</h3>
-                <p style={{ color: 'var(--text2)', marginBottom: 20 }}>{success}</p>
-                <Link to="/login" style={{ background: 'var(--navy)', color: 'var(--white)', padding: '12px 28px', borderRadius: 10, fontWeight: 700, display: 'inline-block' }}>Go to Login</Link>
+              <div style={{ textAlign: 'center', padding: '28px 0' }}>
+                <div style={{ width: 72, height: 72, borderRadius: '50%', background: 'rgba(11,122,94,0.10)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', fontSize: '2rem' }}>🎉</div>
+                <h3 style={{ marginBottom: 10, color: 'var(--text)' }}>Registration Successful!</h3>
+                <p style={{ color: 'var(--text2)', marginBottom: 24, fontSize: '0.9rem' }}>{success}</p>
+                <Link to="/login" style={{ background: 'linear-gradient(135deg, var(--sapphire) 0%, var(--sapphire2) 100%)', color: 'white', padding: '12px 28px', borderRadius: 10, fontWeight: 700, display: 'inline-block', boxShadow: '0 6px 24px rgba(26,58,143,0.30)' }}>Go to Login →</Link>
               </div>
             ) : (
               <>
                 {error && <div className="alert alert-error">{error}</div>}
                 <form onSubmit={submit}>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-                    <div className="form-group" style={{ margin: 0 }}><label className="form-label">Full Name *</label><input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} className="form-input" style={{ background: 'var(--cream)' }} required /></div>
-                    <div className="form-group" style={{ margin: 0 }}><label className="form-label">Email *</label><input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} className="form-input" style={{ background: 'var(--cream)' }} required /></div>
-                    <div className="form-group" style={{ margin: 0 }}><label className="form-label">Phone</label><input value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} className="form-input" style={{ background: 'var(--cream)' }} /></div>
-                    <div className="form-group" style={{ margin: 0 }}><label className="form-label">Password *</label><input type="password" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} className="form-input" style={{ background: 'var(--cream)' }} required /></div>
-                    <div className="form-group" style={{ margin: 0 }}><label className="form-label">Student's Class</label><select value={form.student_class} onChange={e => setForm({ ...form, student_class: e.target.value })} className="form-input" style={{ background: 'var(--cream)' }}><option value="">Select Class</option>{['1','2','3','4','5','6','7','8','9','10','11','12'].map(c => <option key={c} value={c}>Class {c}</option>)}</select></div>
-                    <div className="form-group" style={{ margin: 0 }}><label className="form-label">Parent Name</label><input value={form.parent_name} onChange={e => setForm({ ...form, parent_name: e.target.value })} className="form-input" style={{ background: 'var(--cream)' }} /></div>
+                    {[
+                      ['Full Name *', 'name', 'text', 'Enter full name'],
+                      ['Email *', 'email', 'email', 'your@email.com'],
+                      ['Phone', 'phone', 'tel', '+91 98765 43210'],
+                      ['Password *', 'password', 'password', '••••••••'],
+                    ].map(([lbl, key, type, ph]) => (
+                      <div key={key} className="form-group" style={{ margin: 0 }}>
+                        <label className="form-label">{lbl}</label>
+                        <input type={type} value={form[key]} onChange={e => setForm({ ...form, [key]: e.target.value })}
+                          className="form-input" placeholder={ph} required={lbl.includes('*')} style={{ background: 'var(--ice)' }} />
+                      </div>
+                    ))}
+                    <div className="form-group" style={{ margin: 0 }}>
+                      <label className="form-label">Student's Class</label>
+                      <select value={form.student_class} onChange={e => setForm({ ...form, student_class: e.target.value })}
+                        className="form-input" style={{ background: 'var(--ice)' }}>
+                        <option value="">Select Class</option>
+                        {['1','2','3','4','5','6','7','8','9','10','11','12'].map(c => <option key={c} value={c}>Class {c}</option>)}
+                      </select>
+                    </div>
+                    <div className="form-group" style={{ margin: 0 }}>
+                      <label className="form-label">Parent Name</label>
+                      <input value={form.parent_name} onChange={e => setForm({ ...form, parent_name: e.target.value })}
+                        className="form-input" placeholder="Parent's full name" style={{ background: 'var(--ice)' }} />
+                    </div>
                   </div>
-                  <button type="submit" disabled={loading} style={{ width: '100%', padding: '14px', background: 'var(--navy)', color: 'var(--white)', border: 'none', borderRadius: 12, fontWeight: 700, fontSize: '1rem', cursor: 'pointer', marginTop: 16, fontFamily: 'var(--font-body)' }}>
-                    {loading ? 'Creating...' : 'Create Account →'}
+                  <button type="submit" disabled={loading} style={{
+                    width: '100%', padding: '14px',
+                    background: 'linear-gradient(135deg, var(--sapphire) 0%, var(--sapphire2) 100%)',
+                    color: 'white', border: 'none', borderRadius: 12, fontWeight: 700,
+                    fontSize: '1rem', cursor: loading ? 'not-allowed' : 'pointer',
+                    marginTop: 20, fontFamily: 'var(--font-body)',
+                    boxShadow: '0 6px 24px rgba(26,58,143,0.30)',
+                    opacity: loading ? 0.7 : 1,
+                  }}>
+                    {loading ? 'Creating Account…' : 'Create Account →'}
                   </button>
                 </form>
               </>

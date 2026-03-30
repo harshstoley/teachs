@@ -104,7 +104,7 @@ export default function TestDetail() {
   return (
     <div style={{ maxWidth: 800, margin: '0 auto', padding: '80px 24px' }}>
       {/* Header */}
-      <div style={{ background: 'var(--navy)', borderRadius: 16, padding: '24px 32px', marginBottom: 32, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div style={{ background: 'var(--ink)', borderRadius: 16, padding: '24px 32px', marginBottom: 32, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <h2 style={{ color: 'white', marginBottom: 4 }}>{test.title}</h2>
           <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.85rem' }}>{test.subject} · {test.chapter} · {questions.length} Questions</div>

@@ -27,7 +27,7 @@ export default function LeadForm({ title = 'Book Your Free Demo Class', compact 
   if (success) return (
     <div style={{ textAlign: 'center', padding: '40px 20px' }}>
       <div style={{ fontSize: '3rem', marginBottom: 16 }}>🎉</div>
-      <h3 style={{ color: 'var(--navy)', marginBottom: 12 }}>Demo Booked!</h3>
+      <h3 style={{ color: 'var(--ink)', marginBottom: 12 }}>Demo Booked!</h3>
       <p style={{ color: 'var(--ink-light)', maxWidth: 360, margin: '0 auto 24px' }}>{success}</p>
       <button className="btn btn-outline" onClick={() => setSuccess('')}>Book Another</button>
     </div>

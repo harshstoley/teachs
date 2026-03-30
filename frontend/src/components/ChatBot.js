@@ -49,7 +49,7 @@ export default function ChatBot() {
         onClick={() => setOpen(!open)}
         style={{
           position: 'fixed', bottom: 96, right: 28, width: 54, height: 54, borderRadius: '50%',
-          background: 'var(--navy)', border: 'none', cursor: 'pointer',
+          background: 'var(--ink)', border: 'none', cursor: 'pointer',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           boxShadow: 'var(--shadow-lg)', zIndex: 998, transition: 'all 0.3s',
           transform: open ? 'scale(0.9)' : 'scale(1)',
@@ -76,7 +76,7 @@ export default function ChatBot() {
           animation: 'fadeUp 0.3s ease',
         }}>
           {/* Header */}
-          <div style={{ background: 'var(--navy)', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{ background: 'var(--ink)', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 12 }}>
             <div style={{ width: 38, height: 38, borderRadius: '50%', background: 'var(--teal)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem' }}>🎓</div>
             <div>
               <div style={{ color: 'white', fontWeight: 700, fontSize: '0.95rem' }}>Teachs Assistant</div>

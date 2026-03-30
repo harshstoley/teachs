@@ -37,7 +37,7 @@ export function AdminTests() {
   };
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--navy)' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--ink)' }}>
       <AdminSidebar />
       <main style={{ flex: 1, padding: '64px 16px 24px', background: 'var(--cream)', minWidth: 0, overflowY: 'auto' }}>
         <h2 style={{ marginBottom: 24, color: 'var(--white)' }}>Manage Practice Tests</h2>
@@ -46,7 +46,7 @@ export function AdminTests() {
         <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: 24 }}>
           {/* Test List */}
           <div>
-            <div style={{ background: 'var(--navy2)', borderRadius: 16, padding: 24, border: '1px solid rgba(212,168,83,0.15)', marginBottom: 20 }} style={{ padding: 20, marginBottom: 20 }}>
+            <div style={{ background: 'var(--ink2)', borderRadius: 16, padding: 24, border: '1px solid rgba(59,114,245,0.18)', marginBottom: 20 }} style={{ padding: 20, marginBottom: 20 }}>
               <h4 style={{ marginBottom: 16 }}>Create Test</h4>
               <form onSubmit={createTest} style={{ display: 'grid', gap: 10 }}>
                 <input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} className="form-input" placeholder="Test title *" required />
@@ -88,7 +88,7 @@ export function AdminTests() {
                 <button onClick={() => delTest(selected)} className="btn btn-sm" style={{ background: 'rgba(229,62,62,0.1)', color: 'var(--error)', border: '1px solid rgba(229,62,62,0.2)' }}>Delete Test</button>
               </div>
 
-              <div style={{ background: 'var(--navy2)', borderRadius: 16, padding: 24, border: '1px solid rgba(212,168,83,0.15)', marginBottom: 20 }} style={{ padding: 24, marginBottom: 20 }}>
+              <div style={{ background: 'var(--ink2)', borderRadius: 16, padding: 24, border: '1px solid rgba(59,114,245,0.18)', marginBottom: 20 }} style={{ padding: 24, marginBottom: 20 }}>
                 <h4 style={{ marginBottom: 16 }}>Add Question</h4>
                 <form onSubmit={addQuestion} style={{ display: 'grid', gap: 12 }}>
                   <textarea value={qForm.question_text} onChange={e => setQForm({ ...qForm, question_text: e.target.value })} className="form-input" rows={2} placeholder="Question text *" required />
@@ -115,7 +115,7 @@ export function AdminTests() {
 
               <h4 style={{ marginBottom: 12 }}>Questions ({questions.length})</h4>
               {questions.map((q, i) => (
-                <div key={q.id} style={{ padding: '14px 18px', borderRadius: 10, border: '1px solid var(--border)', background: 'white', marginBottom: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
+                <div key={q.id} style={{ padding: '14px 18px', borderRadius: 10, border: '1px solid rgba(59,114,245,0.15)', background: 'white', marginBottom: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
                   <div style={{ flex: 1 }}>
                     <div style={{ fontWeight: 600, fontSize: '0.875rem', marginBottom: 6 }}>Q{i+1}. {q.question_text}</div>
                     <div style={{ display: 'flex', gap: 12, fontSize: '0.78rem', color: 'var(--ink-lighter)' }}>
@@ -161,12 +161,12 @@ export function AdminTestimonials() {
   const del = async (id) => { if (!window.confirm('Delete?')) return; await api.delete(`/admin/testimonials/${id}`); load(); };
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--navy)' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--ink)' }}>
       <AdminSidebar />
       <main style={{ flex: 1, padding: '64px 16px 24px', background: 'var(--cream)', minWidth: 0, overflowY: 'auto' }}>
         <h2 style={{ marginBottom: 24, color: 'var(--white)' }}>Manage Testimonials</h2>
         {msg && <div className="alert alert-success">{msg}</div>}
-        <div style={{ background: 'var(--navy2)', borderRadius: 16, padding: 24, border: '1px solid rgba(212,168,83,0.15)', marginBottom: 20 }} style={{ padding: 28, marginBottom: 28 }}>
+        <div style={{ background: 'var(--ink2)', borderRadius: 16, padding: 24, border: '1px solid rgba(59,114,245,0.18)', marginBottom: 20 }} style={{ padding: 28, marginBottom: 28 }}>
           <h3 style={{ marginBottom: 20 }}>{editing ? 'Edit' : 'Add'} Testimonial</h3>
           <form onSubmit={save} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
             <div className="form-group" style={{ margin: 0 }}><label className="form-label">Name</label><input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} className="form-input" required /></div>
@@ -187,7 +187,7 @@ export function AdminTestimonials() {
               <div style={{ display: 'flex', gap: 2, marginBottom: 8 }}>{Array.from({ length: t.rating }).map((_, i) => <span key={i} style={{ color: 'var(--amber)' }}>★</span>)}</div>
               <p style={{ fontSize: '0.875rem', marginBottom: 12, fontStyle: 'italic' }}>{t.content?.slice(0, 100)}...</p>
               <div style={{ fontWeight: 700, fontSize: '0.85rem' }}>{t.name}</div>
-              <div style={{ fontSize: '0.78rem', color: 'var(--teal)' }}>{t.role}</div>
+              <div style={{ fontSize: '0.78rem', color: 'var(--emerald2)' }}>{t.role}</div>
               <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
                 <button onClick={() => { setEditing(t.id); const f = typeof t.features === 'string' ? JSON.parse(t.features || '[]') : (t.features || []); setForm({ ...t, is_active: !!t.is_active }); }} className="btn btn-sm btn-outline">Edit</button>
                 <button onClick={() => del(t.id)} className="btn btn-sm" style={{ background: 'rgba(229,62,62,0.1)', color: 'var(--error)', border: '1px solid rgba(229,62,62,0.2)' }}>Del</button>
@@ -217,12 +217,12 @@ export function AdminWorkshop() {
   const del = async (id) => { if (!window.confirm('Delete?')) return; await api.delete(`/workshop/sessions/${id}`); load(); };
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--navy)' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--ink)' }}>
       <AdminSidebar />
       <main style={{ flex: 1, padding: '64px 16px 24px', background: 'var(--cream)', minWidth: 0, overflowY: 'auto' }}>
         <h2 style={{ marginBottom: 24, color: 'var(--white)' }}>Manage Workshop Sessions</h2>
         {msg && <div className="alert alert-success">{msg}</div>}
-        <div style={{ background: 'var(--navy2)', borderRadius: 16, padding: 24, border: '1px solid rgba(212,168,83,0.15)', marginBottom: 20 }} style={{ padding: 28, marginBottom: 28 }}>
+        <div style={{ background: 'var(--ink2)', borderRadius: 16, padding: 24, border: '1px solid rgba(59,114,245,0.18)', marginBottom: 20 }} style={{ padding: 28, marginBottom: 28 }}>
           <h3 style={{ marginBottom: 20 }}>Create Session</h3>
           <form onSubmit={save} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
             <div className="form-group" style={{ margin: 0, gridColumn: '1/-1' }}><label className="form-label">Title *</label><input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} className="form-input" required /></div>
@@ -265,7 +265,7 @@ export function AdminWomen() {
   const statusColor = s => ({ pending: 'badge-amber', reviewing: 'badge-teal', accepted: 'badge-success', rejected: 'badge-error' }[s] || 'badge-navy');
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--navy)' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--ink)' }}>
       <AdminSidebar />
       <main style={{ flex: 1, padding: '64px 16px 24px', background: 'var(--cream)', minWidth: 0, overflowY: 'auto' }}>
         <h2 style={{ marginBottom: 24, color: 'var(--white)' }}>Women's Program Applications</h2>
@@ -277,7 +277,7 @@ export function AdminWomen() {
               {apps.map(a => (
                 <tr key={a.id}>
                   <td><strong>{a.name}</strong><div style={{ fontSize: '0.75rem', color: 'var(--ink-lighter)' }}>{a.email}</div></td>
-                  <td><a href={`tel:${a.phone}`} style={{ color: 'var(--teal)' }}>{a.phone}</a></td>
+                  <td><a href={`tel:${a.phone}`} style={{ color: 'var(--emerald2)' }}>{a.phone}</a></td>
                   <td>{a.city}</td>
                   <td style={{ maxWidth: 160 }}>{a.qualification}</td>
                   <td>{a.subjects}</td>
@@ -320,12 +320,12 @@ export function AdminAssign() {
   };
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--navy)' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--ink)' }}>
       <AdminSidebar />
       <main style={{ flex: 1, padding: '64px 16px 24px', background: 'var(--cream)', minWidth: 0, overflowY: 'auto' }}>
         <h2 style={{ marginBottom: 24, color: 'var(--white)' }}>Assign Teachers to Students</h2>
         {msg.text && <div className={`alert alert-${msg.type}`} style={{ marginBottom: 16 }}>{msg.text}</div>}
-        <div style={{ background: 'var(--navy2)', borderRadius: 16, padding: 24, border: '1px solid rgba(212,168,83,0.15)', marginBottom: 20 }} style={{ padding: '64px 16px 24px', minWidth: 0, maxWidth: 600 }}>
+        <div style={{ background: 'var(--ink2)', borderRadius: 16, padding: 24, border: '1px solid rgba(59,114,245,0.18)', marginBottom: 20 }} style={{ padding: '64px 16px 24px', minWidth: 0, maxWidth: 600 }}>
           <p style={{ color: 'var(--ink-lighter)', marginBottom: 24, fontSize: '0.9rem' }}>Use this to implement the Dual-Teacher Model — assign 2 teachers per student for different subject groups.</p>
           <form onSubmit={assign} style={{ display: 'grid', gap: 16 }}>
             <div className="form-group" style={{ margin: 0 }}>
@@ -379,12 +379,12 @@ export function AdminSchedule() {
   };
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--navy)' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--ink)' }}>
       <AdminSidebar />
       <main style={{ flex: 1, padding: '64px 16px 24px', background: 'var(--cream)', minWidth: 0, overflowY: 'auto' }}>
         <h2 style={{ marginBottom: 24, color: 'var(--white)' }}>Schedule Classes</h2>
         {msg.text && <div className={`alert alert-${msg.type}`} style={{ marginBottom: 16 }}>{msg.text}</div>}
-        <div style={{ background: 'var(--navy2)', borderRadius: 16, padding: 24, border: '1px solid rgba(212,168,83,0.15)', marginBottom: 20 }} style={{ padding: '64px 16px 24px', minWidth: 0, maxWidth: 600 }}>
+        <div style={{ background: 'var(--ink2)', borderRadius: 16, padding: 24, border: '1px solid rgba(59,114,245,0.18)', marginBottom: 20 }} style={{ padding: '64px 16px 24px', minWidth: 0, maxWidth: 600 }}>
           <form onSubmit={schedule} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
             <div className="form-group" style={{ margin: 0, gridColumn: '1/-1' }}>
               <label className="form-label">Student *</label>
@@ -432,12 +432,12 @@ export function AdminAnnouncements() {
   };
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--navy)' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--ink)' }}>
       <AdminSidebar />
       <main style={{ flex: 1, padding: '64px 16px 24px', background: 'var(--cream)', minWidth: 0, overflowY: 'auto' }}>
         <h2 style={{ marginBottom: 24, color: 'var(--white)' }}>Announcements</h2>
         {msg && <div className="alert alert-success">{msg}</div>}
-        <div style={{ background: 'var(--navy2)', borderRadius: 16, padding: 24, border: '1px solid rgba(212,168,83,0.15)', marginBottom: 20 }} style={{ padding: 28, marginBottom: 28, maxWidth: 600 }}>
+        <div style={{ background: 'var(--ink2)', borderRadius: 16, padding: 24, border: '1px solid rgba(59,114,245,0.18)', marginBottom: 20 }} style={{ padding: 28, marginBottom: 28, maxWidth: 600 }}>
           <h3 style={{ marginBottom: 20 }}>Create Announcement</h3>
           <form onSubmit={create} style={{ display: 'grid', gap: 16 }}>
             <div className="form-group" style={{ margin: 0 }}><label className="form-label">Title</label><input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} className="form-input" /></div>
@@ -455,7 +455,7 @@ export function AdminAnnouncements() {
 
         <div style={{ display: 'grid', gap: 12 }}>
           {items.map(a => (
-            <div key={a.id} style={{ padding: '14px 20px', borderRadius: 10, border: '1px solid var(--border)', background: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16 }}>
+            <div key={a.id} style={{ padding: '14px 20px', borderRadius: 10, border: '1px solid rgba(59,114,245,0.15)', background: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16 }}>
               <div>
                 <div style={{ fontWeight: 700, fontSize: '0.9rem', marginBottom: 4 }}>{a.title}</div>
                 <p style={{ fontSize: '0.875rem', margin: 0 }}>{a.message}</p>

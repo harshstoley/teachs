@@ -38,13 +38,13 @@ export function AdminPricing() {
   };
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--navy)' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--ink)' }}>
       <AdminSidebar />
       <main style={{ flex: 1, padding: '64px 16px 24px', background: 'var(--cream)', minWidth: 0, overflowY: 'auto' }}>
         <h2 style={{ marginBottom: 24, color: 'var(--white)' }}>Manage Pricing Plans</h2>
         {msg && <div className="alert alert-success">{msg}</div>}
 
-        <div style={{ background: 'var(--navy2)', borderRadius: 16, padding: 24, border: '1px solid rgba(212,168,83,0.15)', marginBottom: 20 }} style={{ padding: 28, marginBottom: 28 }}>
+        <div style={{ background: 'var(--ink2)', borderRadius: 16, padding: 24, border: '1px solid rgba(59,114,245,0.18)', marginBottom: 20 }} style={{ padding: 28, marginBottom: 28 }}>
           <h3 style={{ marginBottom: 20 }}>{editing ? 'Edit Plan' : 'Add New Plan'}</h3>
           <form onSubmit={save} style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
             <div className="form-group" style={{ margin: 0, gridColumn: '1/-1' }}><label className="form-label">Title *</label><input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} className="form-input" required /></div>
@@ -76,7 +76,7 @@ export function AdminPricing() {
                   <td><span className="badge badge-navy">{p.plan_type}</span></td>
                   <td>{p.class_range}</td>
                   <td>{p.regular_price > 0 ? `₹${Number(p.regular_price).toLocaleString('en-IN')}` : 'Free'}</td>
-                  <td style={{ fontWeight: 700, color: 'var(--teal)' }}>{p.discounted_price > 0 ? `₹${Number(p.discounted_price).toLocaleString('en-IN')}` : '—'}</td>
+                  <td style={{ fontWeight: 700, color: 'var(--emerald2)' }}>{p.discounted_price > 0 ? `₹${Number(p.discounted_price).toLocaleString('en-IN')}` : '—'}</td>
                   <td><span className={`badge ${p.is_active ? 'badge-success' : 'badge-error'}`}>{p.is_active ? 'Active' : 'Hidden'}</span></td>
                   <td>
                     <div style={{ display: 'flex', gap: 6 }}>
@@ -120,7 +120,7 @@ export function AdminLeads() {
   const statusColor = s => ({ new: 'badge-amber', contacted: 'badge-teal', converted: 'badge-success', closed: 'badge-error' }[s] || 'badge-navy');
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--navy)' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--ink)' }}>
       <AdminSidebar />
       <main style={{ flex: 1, padding: '64px 16px 24px', background: 'var(--cream)', minWidth: 0, overflowY: 'auto' }}>
         <h2 style={{ marginBottom: 8 }}>Leads & Demo Requests</h2>
@@ -140,7 +140,7 @@ export function AdminLeads() {
               {leads.map(l => (
                 <tr key={l.id}>
                   <td><strong>{l.name}</strong><div style={{ fontSize: '0.75rem', color: 'var(--ink-lighter)' }}>{l.email}</div></td>
-                  <td><a href={`tel:${l.phone}`} style={{ color: 'var(--teal)' }}>{l.phone}</a></td>
+                  <td><a href={`tel:${l.phone}`} style={{ color: 'var(--emerald2)' }}>{l.phone}</a></td>
                   <td>{l.student_class || '-'}</td>
                   <td>{l.subject || '-'}</td>
                   <td><span className="badge badge-navy" style={{ fontSize: '0.68rem' }}>{l.source}</span></td>
@@ -183,7 +183,7 @@ export function AdminPayments() {
   const total = payments.filter(p => p.status === 'captured').reduce((s, p) => s + Number(p.amount), 0);
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--navy)' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--ink)' }}>
       <AdminSidebar />
       <main style={{ flex: 1, padding: '64px 16px 24px', background: 'var(--cream)', minWidth: 0, overflowY: 'auto' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
@@ -253,12 +253,12 @@ export function AdminSettings() {
   ];
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--navy)' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--ink)' }}>
       <AdminSidebar />
       <main style={{ flex: 1, padding: '64px 16px 24px', background: 'var(--cream)', minWidth: 0, overflowY: 'auto' }}>
         <h2 style={{ marginBottom: 24, color: 'var(--white)' }}>Site Settings</h2>
         {msg.text && <div className={`alert alert-${msg.type}`} style={{ marginBottom: 16 }}>{msg.text}</div>}
-        <div style={{ background: 'var(--navy2)', borderRadius: 16, padding: 24, border: '1px solid rgba(212,168,83,0.15)', marginBottom: 20 }} style={{ padding: '64px 16px 24px', minWidth: 0, maxWidth: 700 }}>
+        <div style={{ background: 'var(--ink2)', borderRadius: 16, padding: 24, border: '1px solid rgba(59,114,245,0.18)', marginBottom: 20 }} style={{ padding: '64px 16px 24px', minWidth: 0, maxWidth: 700 }}>
           <form onSubmit={save}>
             {fields.map(f => (
               <div key={f.key} className="form-group">

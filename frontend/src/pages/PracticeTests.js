@@ -39,7 +39,7 @@ export default function PracticeTests() {
 
   return (
     <div>
-      <section style={{ background: 'var(--navy)', padding: '100px 0 72px' }}>
+      <section style={{ background: 'var(--ink)', padding: '100px 0 72px' }}>
         <div className="container" style={{ textAlign: 'center' }}>
           <span className="badge badge-teal" style={{ marginBottom: 16 }}>Free Practice Tests</span>
           <h1 style={{ color: 'white', marginBottom: 16 }}>100+ Practice Tests</h1>
@@ -93,7 +93,7 @@ export default function PracticeTests() {
             Object.entries(grouped).map(([cls, clsTests]) => (
               <div key={cls} style={{ marginBottom: 48 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 20 }}>
-                  <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'var(--navy)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 700, fontSize: '0.9rem', flexShrink: 0 }}>
+                  <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'var(--ink)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 700, fontSize: '0.9rem', flexShrink: 0 }}>
                     {cls.replace('Class ', '')}
                   </div>
                   <h3 style={{ color: 'var(--ink)' }}>{cls}</h3>
