@@ -29,7 +29,7 @@ export default function Home() {
         <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 80% 60% at 60% 40%,rgba(212,168,83,0.08) 0%,transparent 60%),radial-gradient(ellipse 50% 40% at 20% 80%,rgba(30,49,80,0.9) 0%,transparent 70%)' }} />
         <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(212,168,83,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(212,168,83,0.04) 1px,transparent 1px)', backgroundSize: '60px 60px' }} />
         <div className="container" style={{ position: 'relative', zIndex: 1, padding: '80px 24px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60, alignItems: 'center' }}>
+          <div className="hero-grid-wrap" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60, alignItems: 'center' }}>
             <div className="animate-fadeup">
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(212,168,83,0.12)', border: '1px solid rgba(212,168,83,0.3)', color: 'var(--gold)', fontSize: '0.8rem', fontWeight: 700, padding: '7px 16px', borderRadius: 100, marginBottom: 28, letterSpacing: '0.5px' }}>
                 <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--gold)', display: 'inline-block' }} />
@@ -134,7 +134,7 @@ export default function Home() {
             <span className="section-tag">How It Works</span>
             <h2 className="section-title light">Get Started in 4 Simple Steps</h2>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 24 }}>
+          <div className="how-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 24 }}>
             {[
               ['01','Book Free Demo','Fill the form. We contact you within 24 hours.'],
               ['02','Meet Your Teachers','We assign two specialized teachers based on your child\'s needs.'],

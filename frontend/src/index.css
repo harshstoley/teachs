@@ -125,3 +125,16 @@ tr:hover td { background: rgba(212,168,83,0.04); }
 .tab-btn.active { background: var(--navy); color: var(--white); font-weight: 600; }
 @media (max-width: 900px) { .grid-4 { grid-template-columns: repeat(2,1fr); } .grid-3 { grid-template-columns: repeat(2,1fr); } }
 @media (max-width: 600px) { .grid-4,.grid-3,.grid-2 { grid-template-columns: 1fr; } .section { padding: 60px 0; } .container { padding: 0 16px; } }
+
+/* ── RESPONSIVE FIXES ── */
+@media (max-width: 860px) {
+  .hero-grid-wrap { grid-template-columns: 1fr !important; }
+  .hero-grid-wrap > div:last-child { display: none !important; }
+}
+@media (max-width: 700px) {
+  .how-grid { grid-template-columns: 1fr 1fr !important; }
+}
+@media (max-width: 480px) {
+  .how-grid { grid-template-columns: 1fr !important; }
+  h1 { font-size: 2rem !important; }
+}

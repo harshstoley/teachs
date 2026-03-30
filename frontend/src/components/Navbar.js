@@ -13,7 +13,7 @@ const TeachsLogo = ({ size = 36 }) => (
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const { user, logout } = useAuth();
+  const { user, logout, loading } = useAuth();
   const location = useLocation();
 
   useEffect(() => {
@@ -76,17 +76,17 @@ export default function Navbar() {
 
           {/* CTA */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }} className="desk-nav">
-            {user ? (
+            {!loading && user ? (
               <>
                 <Link to={getDash()} style={{ color: 'var(--slate2)', fontSize: '0.88rem', fontWeight: 500, padding: '8px 14px', borderRadius: 8, background: 'rgba(255,255,255,0.06)' }}>Dashboard</Link>
-                <button onClick={logout} className="btn-ghost btn btn-sm" style={{ fontSize: '0.85rem' }}>Logout</button>
+                <button onClick={logout} style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 8, padding: '8px 16px', color: 'var(--slate2)', fontSize: '0.85rem', cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Logout</button>
               </>
-            ) : (
+            ) : !loading ? (
               <>
                 <Link to="/login" style={{ color: 'var(--slate2)', fontSize: '0.88rem', fontWeight: 500, padding: '8px 14px', borderRadius: 8, transition: 'color 0.2s' }}>Login</Link>
                 <Link to="/pricing" style={{ background: 'var(--gold)', color: 'var(--navy)', fontWeight: 700, padding: '9px 20px', borderRadius: 8, fontSize: '0.9rem', transition: 'all 0.2s' }}>Book Free Demo</Link>
               </>
-            )}
+            ) : null}
           </div>
 
           {/* Hamburger */}
@@ -104,10 +104,10 @@ export default function Navbar() {
               <Link key={l.to} to={l.to} style={{ display: 'block', color: location.pathname === l.to ? 'var(--gold)' : 'var(--slate2)', padding: '12px 0', fontWeight: 500, borderBottom: '1px solid rgba(255,255,255,0.05)' }}>{l.label}</Link>
             ))}
             <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
-              {user ? (
+              {!loading && user ? (
                 <>
                   <Link to={getDash()} style={{ flex: 1, textAlign: 'center', background: 'var(--gold)', color: 'var(--navy)', fontWeight: 700, padding: '10px', borderRadius: 8, fontSize: '0.9rem' }}>Dashboard</Link>
-                  <button onClick={logout} style={{ flex: 1, background: 'rgba(255,255,255,0.08)', color: 'var(--white)', fontWeight: 600, padding: '10px', borderRadius: 8, border: 'none' }}>Logout</button>
+                  <button onClick={logout} style={{ flex: 1, background: 'rgba(255,255,255,0.08)', color: 'var(--white)', fontWeight: 600, padding: '10px', borderRadius: 8, border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Logout</button>
                 </>
               ) : (
                 <>
