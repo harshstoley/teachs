@@ -38,13 +38,13 @@ export function AdminPricing() {
   };
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--navy)' }}>
       <AdminSidebar />
-      <main style={{ flex: 1, padding: 32, background: 'var(--ice)', overflowY: 'auto' }}>
-        <h2 style={{ marginBottom: 24 }}>Manage Pricing Plans</h2>
+      <main style={{ flex: 1, padding: '64px 16px 24px', background: 'var(--cream)', minWidth: 0, overflowY: 'auto' }}>
+        <h2 style={{ marginBottom: 24, color: 'var(--white)' }}>Manage Pricing Plans</h2>
         {msg && <div className="alert alert-success">{msg}</div>}
 
-        <div className="card-flat" style={{ padding: 28, marginBottom: 28 }}>
+        <div style={{ background: 'var(--navy2)', borderRadius: 16, padding: 24, border: '1px solid rgba(212,168,83,0.15)', marginBottom: 20 }} style={{ padding: 28, marginBottom: 28 }}>
           <h3 style={{ marginBottom: 20 }}>{editing ? 'Edit Plan' : 'Add New Plan'}</h3>
           <form onSubmit={save} style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
             <div className="form-group" style={{ margin: 0, gridColumn: '1/-1' }}><label className="form-label">Title *</label><input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} className="form-input" required /></div>
@@ -120,9 +120,9 @@ export function AdminLeads() {
   const statusColor = s => ({ new: 'badge-amber', contacted: 'badge-teal', converted: 'badge-success', closed: 'badge-error' }[s] || 'badge-navy');
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--navy)' }}>
       <AdminSidebar />
-      <main style={{ flex: 1, padding: 32, background: 'var(--ice)', overflowY: 'auto' }}>
+      <main style={{ flex: 1, padding: '64px 16px 24px', background: 'var(--cream)', minWidth: 0, overflowY: 'auto' }}>
         <h2 style={{ marginBottom: 8 }}>Leads & Demo Requests</h2>
         <p style={{ color: 'var(--ink-lighter)', marginBottom: 24 }}>{total} leads total</p>
         {msg && <div className="alert alert-success">{msg}</div>}
@@ -183,9 +183,9 @@ export function AdminPayments() {
   const total = payments.filter(p => p.status === 'captured').reduce((s, p) => s + Number(p.amount), 0);
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--navy)' }}>
       <AdminSidebar />
-      <main style={{ flex: 1, padding: 32, background: 'var(--ice)', overflowY: 'auto' }}>
+      <main style={{ flex: 1, padding: '64px 16px 24px', background: 'var(--cream)', minWidth: 0, overflowY: 'auto' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
           <div>
             <h2 style={{ marginBottom: 4 }}>Payments</h2>
@@ -253,12 +253,12 @@ export function AdminSettings() {
   ];
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--navy)' }}>
       <AdminSidebar />
-      <main style={{ flex: 1, padding: 32, background: 'var(--ice)', overflowY: 'auto' }}>
-        <h2 style={{ marginBottom: 24 }}>Site Settings</h2>
+      <main style={{ flex: 1, padding: '64px 16px 24px', background: 'var(--cream)', minWidth: 0, overflowY: 'auto' }}>
+        <h2 style={{ marginBottom: 24, color: 'var(--white)' }}>Site Settings</h2>
         {msg.text && <div className={`alert alert-${msg.type}`} style={{ marginBottom: 16 }}>{msg.text}</div>}
-        <div className="card-flat" style={{ padding: 32, maxWidth: 700 }}>
+        <div style={{ background: 'var(--navy2)', borderRadius: 16, padding: 24, border: '1px solid rgba(212,168,83,0.15)', marginBottom: 20 }} style={{ padding: '64px 16px 24px', minWidth: 0, maxWidth: 700 }}>
           <form onSubmit={save}>
             {fields.map(f => (
               <div key={f.key} className="form-group">

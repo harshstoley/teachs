@@ -1,122 +1,99 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import AdminSidebar from '../../components/AdminSidebar';
+import AdminLayout from '../../components/AdminLayout';
 import api from '../../utils/api';
 
-export default function AdminUsers() {
-  const [users, setUsers] = useState([]);
-  const [total, setTotal] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [role, setRole] = useState('');
-  const [search, setSearch] = useState('');
-  const [msg, setMsg] = useState({ text: '', type: '' });
-  const [showCreate, setShowCreate] = useState(false);
-  const [teacherForm, setTeacherForm] = useState({ name: '', email: '', password: '', phone: '', subjects: '', qualification: '', bio: '' });
+const inp = { width:'100%', padding:'10px 14px', background:'rgba(255,255,255,0.06)', border:'1px solid rgba(212,168,83,0.2)', borderRadius:10, color:'#fff', fontSize:'0.88rem', fontFamily:'var(--font-body)', outline:'none' };
+const cardDark = { background:'#152238', border:'1px solid rgba(212,168,83,0.15)', borderRadius:14 };
 
-  const showMsg = (text, type = 'success') => { setMsg({ text, type }); setTimeout(() => setMsg({ text: '', type: '' }), 3000); };
+export default function AdminUsers() {
+  const [users, setUsers] = useState([]); const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(true); const [role, setRole] = useState('');
+  const [search, setSearch] = useState(''); const [msg, setMsg] = useState({ text:'', type:'' });
+  const [showCreate, setShowCreate] = useState(false);
+  const [tf, setTf] = useState({ name:'', email:'', password:'', phone:'', subjects:'', qualification:'', bio:'' });
+  const showMsg = (text, type='success') => { setMsg({text,type}); setTimeout(()=>setMsg({text:'',type:''}),3000); };
 
   const load = useCallback(() => {
     setLoading(true);
     api.get(`/admin/users?role=${role}&search=${search}&limit=50`)
-      .then(r => { setUsers(r.data.users); setTotal(r.data.total); })
-      .catch(() => {})
-      .finally(() => setLoading(false));
+      .then(r => { setUsers(r.data.users); setTotal(r.data.total); }).catch(()=>{}).finally(()=>setLoading(false));
   }, [role, search]);
 
-  useEffect(() => { document.title = 'Manage Users | Teachs Admin'; load(); }, [load]);
+  useEffect(() => { document.title='Users | Admin'; load(); }, [load]);
 
-  const approve = async (id) => {
-    try { await api.put(`/admin/users/${id}/approve`); showMsg('User approved!'); load(); } catch { showMsg('Failed.', 'error'); }
-  };
-  const toggleActive = async (id) => {
-    try { await api.put(`/admin/users/${id}/toggle-active`); showMsg('Status updated!'); load(); } catch { showMsg('Failed.', 'error'); }
-  };
-  const deleteUser = async (id, name) => {
-    if (!window.confirm(`Delete account for "${name}"? This cannot be undone.`)) return;
-    try { await api.delete(`/admin/users/${id}`); showMsg('User deleted.'); load(); } catch { showMsg('Failed.', 'error'); }
-  };
+  const approve = async id => { try { await api.put(`/admin/users/${id}/approve`); showMsg('Approved!'); load(); } catch { showMsg('Failed.','error'); } };
+  const toggle = async id => { try { await api.put(`/admin/users/${id}/toggle-active`); showMsg('Updated!'); load(); } catch { showMsg('Failed.','error'); } };
+  const del = async (id, name) => { if(!window.confirm(`Delete "${name}"?`)) return; try { await api.delete(`/admin/users/${id}`); showMsg('Deleted.'); load(); } catch { showMsg('Failed.','error'); } };
   const createTeacher = async e => {
     e.preventDefault();
-    try { await api.post('/admin/teachers', teacherForm); showMsg('Teacher created!'); setShowCreate(false); setTeacherForm({ name: '', email: '', password: '', phone: '', subjects: '', qualification: '', bio: '' }); load(); } catch (err) { showMsg(err.response?.data?.error || 'Failed.', 'error'); }
+    try { await api.post('/admin/teachers', tf); showMsg('Teacher created!'); setShowCreate(false); setTf({name:'',email:'',password:'',phone:'',subjects:'',qualification:'',bio:''}); load(); }
+    catch(err) { showMsg(err.response?.data?.error||'Failed.','error'); }
   };
 
-  const roleColor = r => ({ admin: 'badge-navy', teacher: 'badge-teal', student: 'badge-amber' }[r] || 'badge-navy');
+  const roleColors = { admin:'rgba(212,168,83,0.15)', teacher:'rgba(0,153,178,0.15)', student:'rgba(42,138,94,0.15)' };
+  const roleText = { admin:'var(--gold)', teacher:'var(--teal)', student:'#5BC8A0' };
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh' }}>
-      <AdminSidebar />
-      <main style={{ flex: 1, padding: '32px', background: 'var(--ice)', overflowY: 'auto' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-          <div>
-            <h2 style={{ color: 'var(--ink)', marginBottom: 4 }}>Manage Users</h2>
-            <p style={{ color: 'var(--ink-lighter)' }}>{total} total users</p>
-          </div>
-          <button onClick={() => setShowCreate(!showCreate)} className="btn btn-primary">+ Add Teacher</button>
-        </div>
+    <AdminLayout title="Manage Users" subtitle={`${total} total users`}>
+      {msg.text && <div className={`alert alert-${msg.type}`} style={{marginBottom:16}}>{msg.text}</div>}
 
-        {msg.text && <div className={`alert alert-${msg.type}`} style={{ marginBottom: 16 }}>{msg.text}</div>}
-
-        {/* Create Teacher Form */}
-        {showCreate && (
-          <div className="card-flat" style={{ padding: 28, marginBottom: 24 }}>
-            <h3 style={{ marginBottom: 20 }}>Create Teacher Account</h3>
-            <form onSubmit={createTeacher} style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
-              <div className="form-group" style={{ margin: 0 }}><label className="form-label">Name *</label><input value={teacherForm.name} onChange={e => setTeacherForm({ ...teacherForm, name: e.target.value })} className="form-input" required /></div>
-              <div className="form-group" style={{ margin: 0 }}><label className="form-label">Email *</label><input type="email" value={teacherForm.email} onChange={e => setTeacherForm({ ...teacherForm, email: e.target.value })} className="form-input" required /></div>
-              <div className="form-group" style={{ margin: 0 }}><label className="form-label">Password *</label><input type="password" value={teacherForm.password} onChange={e => setTeacherForm({ ...teacherForm, password: e.target.value })} className="form-input" required /></div>
-              <div className="form-group" style={{ margin: 0 }}><label className="form-label">Phone</label><input value={teacherForm.phone} onChange={e => setTeacherForm({ ...teacherForm, phone: e.target.value })} className="form-input" /></div>
-              <div className="form-group" style={{ margin: 0 }}><label className="form-label">Subjects</label><input value={teacherForm.subjects} onChange={e => setTeacherForm({ ...teacherForm, subjects: e.target.value })} className="form-input" placeholder="Math, Science" /></div>
-              <div className="form-group" style={{ margin: 0 }}><label className="form-label">Qualification</label><input value={teacherForm.qualification} onChange={e => setTeacherForm({ ...teacherForm, qualification: e.target.value })} className="form-input" /></div>
-              <div style={{ gridColumn: '1/-1', display: 'flex', gap: 12 }}>
-                <button type="submit" className="btn btn-primary">Create Teacher</button>
-                <button type="button" onClick={() => setShowCreate(false)} className="btn btn-ghost">Cancel</button>
-              </div>
-            </form>
-          </div>
-        )}
-
-        {/* Filters */}
-        <div style={{ display: 'flex', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}>
-          <input value={search} onChange={e => setSearch(e.target.value)} onKeyDown={e => e.key === 'Enter' && load()} placeholder="Search name/email..." className="form-input" style={{ width: 260 }} />
-          {['', 'admin', 'teacher', 'student'].map(r => (
-            <button key={r} onClick={() => setRole(r)} className={`btn btn-sm ${role === r ? 'btn-primary' : 'btn-ghost'}`}>{r || 'All'}</button>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:20,flexWrap:'wrap',gap:12}}>
+        <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
+          {['','admin','teacher','student'].map(r=>(
+            <button key={r} onClick={()=>setRole(r)} style={{padding:'7px 14px',borderRadius:8,border:'none',cursor:'pointer',background:role===r?'var(--gold)':'rgba(255,255,255,0.08)',color:role===r?'var(--navy)':'#fff',fontWeight:role===r?700:400,fontSize:'0.82rem',fontFamily:'var(--font-body)'}}>{r||'All'}</button>
           ))}
-          <button onClick={load} className="btn btn-secondary btn-sm">Search</button>
         </div>
+        <button onClick={()=>setShowCreate(!showCreate)} style={{padding:'9px 18px',background:'var(--gold)',color:'var(--navy)',border:'none',borderRadius:10,fontWeight:700,cursor:'pointer',fontSize:'0.88rem',fontFamily:'var(--font-body)'}}>+ Add Teacher</button>
+      </div>
 
-        {loading ? <div className="spinner" style={{ margin: '40px auto' }} /> : (
-          <div className="table-wrap">
-            <table>
-              <thead>
-                <tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Joined</th><th>Actions</th></tr>
-              </thead>
-              <tbody>
-                {users.map(u => (
-                  <tr key={u.id}>
-                    <td><strong>{u.name}</strong><div style={{ fontSize: '0.75rem', color: 'var(--ink-lighter)' }}>{u.phone}</div></td>
-                    <td>{u.email}</td>
-                    <td><span className={`badge ${roleColor(u.role)}`}>{u.role}</span></td>
-                    <td>
-                      {!u.is_approved && u.role === 'student' ? (
-                        <span className="badge badge-amber">Pending</span>
-                      ) : (
-                        <span className={`badge ${u.is_active ? 'badge-success' : 'badge-error'}`}>{u.is_active ? 'Active' : 'Inactive'}</span>
-                      )}
-                    </td>
-                    <td style={{ fontSize: '0.82rem' }}>{new Date(u.created_at).toLocaleDateString('en-IN')}</td>
-                    <td>
-                      <div style={{ display: 'flex', gap: 6 }}>
-                        {!u.is_approved && <button onClick={() => approve(u.id)} className="btn btn-sm btn-secondary">Approve</button>}
-                        <button onClick={() => toggleActive(u.id)} className="btn btn-sm btn-ghost">{u.is_active ? 'Deactivate' : 'Activate'}</button>
-                        <button onClick={() => deleteUser(u.id, u.name)} className="btn btn-sm" style={{ background: 'rgba(229,62,62,0.1)', color: 'var(--error)', border: '1px solid rgba(229,62,62,0.2)' }}>Delete</button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </main>
-    </div>
+      <div style={{display:'flex',gap:10,marginBottom:20}}>
+        <input value={search} onChange={e=>setSearch(e.target.value)} onKeyDown={e=>e.key==='Enter'&&load()} placeholder="Search name/email..." style={{...inp,maxWidth:280}}/>
+        <button onClick={load} style={{padding:'10px 18px',background:'rgba(212,168,83,0.15)',color:'var(--gold)',border:'1px solid rgba(212,168,83,0.2)',borderRadius:10,cursor:'pointer',fontWeight:600,fontFamily:'var(--font-body)'}}>Search</button>
+      </div>
+
+      {showCreate && (
+        <div style={{...cardDark,padding:'24px 20px',marginBottom:20}}>
+          <h4 style={{color:'#fff',marginBottom:18,fontFamily:'var(--font-body)',fontWeight:700}}>Create Teacher Account</h4>
+          <form onSubmit={createTeacher} style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(180px,1fr))',gap:14}}>
+            {[['name','Name *'],['email','Email *'],['password','Password *'],['phone','Phone'],['subjects','Subjects'],['qualification','Qualification']].map(([k,l])=>(
+              <div key={k}><label style={{display:'block',fontSize:'0.78rem',color:'var(--slate2)',marginBottom:5,fontWeight:600}}>{l}</label><input value={tf[k]} onChange={e=>setTf({...tf,[k]:e.target.value})} style={inp} required={['name','email','password'].includes(k)}/></div>
+            ))}
+            <div style={{display:'flex',gap:10,alignItems:'flex-end'}}>
+              <button type="submit" style={{padding:'10px 20px',background:'var(--gold)',color:'var(--navy)',border:'none',borderRadius:10,fontWeight:700,cursor:'pointer',fontFamily:'var(--font-body)'}}>Create</button>
+              <button type="button" onClick={()=>setShowCreate(false)} style={{padding:'10px 16px',background:'rgba(255,255,255,0.08)',color:'#fff',border:'none',borderRadius:10,cursor:'pointer',fontFamily:'var(--font-body)'}}>Cancel</button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {loading ? <div className="spinner" style={{margin:'40px auto',borderTopColor:'var(--gold)'}}/> : (
+        <div style={{overflowX:'auto',borderRadius:12,border:'1px solid rgba(212,168,83,0.12)'}}>
+          <table style={{width:'100%',borderCollapse:'collapse',minWidth:500}}>
+            <thead><tr>{['Name','Email','Role','Status','Joined','Actions'].map(h=><th key={h} style={{padding:'11px 14px',background:'#0f1e35',textAlign:'left',fontSize:'0.75rem',fontWeight:700,color:'var(--slate2)',textTransform:'uppercase',letterSpacing:'0.05em'}}>{h}</th>)}</tr></thead>
+            <tbody>
+              {users.map(u=>(
+                <tr key={u.id}>
+                  <td style={{padding:'11px 14px',borderTop:'1px solid rgba(255,255,255,0.05)',color:'#fff',fontWeight:600,fontSize:'0.875rem'}}>{u.name}<div style={{fontSize:'0.72rem',color:'var(--slate)'}}>{u.phone}</div></td>
+                  <td style={{padding:'11px 14px',borderTop:'1px solid rgba(255,255,255,0.05)',color:'var(--slate2)',fontSize:'0.82rem'}}>{u.email}</td>
+                  <td style={{padding:'11px 14px',borderTop:'1px solid rgba(255,255,255,0.05)'}}><span style={{background:roleColors[u.role],color:roleText[u.role],padding:'3px 10px',borderRadius:100,fontSize:'0.7rem',fontWeight:700}}>{u.role}</span></td>
+                  <td style={{padding:'11px 14px',borderTop:'1px solid rgba(255,255,255,0.05)'}}>
+                    {!u.is_approved&&u.role==='student'?<span style={{background:'rgba(212,168,83,0.15)',color:'var(--gold)',padding:'3px 10px',borderRadius:100,fontSize:'0.7rem',fontWeight:700}}>Pending</span>:
+                    <span style={{background:u.is_active?'rgba(42,138,94,0.15)':'rgba(192,57,43,0.15)',color:u.is_active?'#5BC8A0':'#e74c3c',padding:'3px 10px',borderRadius:100,fontSize:'0.7rem',fontWeight:700}}>{u.is_active?'Active':'Inactive'}</span>}
+                  </td>
+                  <td style={{padding:'11px 14px',borderTop:'1px solid rgba(255,255,255,0.05)',fontSize:'0.78rem',color:'var(--slate)'}}>{new Date(u.created_at).toLocaleDateString('en-IN')}</td>
+                  <td style={{padding:'11px 14px',borderTop:'1px solid rgba(255,255,255,0.05)'}}>
+                    <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
+                      {!u.is_approved&&<button onClick={()=>approve(u.id)} style={{padding:'5px 10px',background:'rgba(42,138,94,0.2)',color:'#5BC8A0',border:'1px solid rgba(42,138,94,0.3)',borderRadius:7,cursor:'pointer',fontSize:'0.75rem',fontFamily:'var(--font-body)'}}>Approve</button>}
+                      <button onClick={()=>toggle(u.id)} style={{padding:'5px 10px',background:'rgba(255,255,255,0.06)',color:'var(--slate2)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:7,cursor:'pointer',fontSize:'0.75rem',fontFamily:'var(--font-body)'}}>{u.is_active?'Deactivate':'Activate'}</button>
+                      <button onClick={()=>del(u.id,u.name)} style={{padding:'5px 10px',background:'rgba(192,57,43,0.15)',color:'#e74c3c',border:'1px solid rgba(192,57,43,0.2)',borderRadius:7,cursor:'pointer',fontSize:'0.75rem',fontFamily:'var(--font-body)'}}>Delete</button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </AdminLayout>
   );
 }

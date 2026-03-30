@@ -147,3 +147,12 @@ tr:hover td { background: rgba(212,168,83,0.04); }
   .modal-box { padding: 24px 18px !important; margin: 10px !important; }
   .tab-btn { font-size: 0.8rem !important; padding: 7px 11px !important; }
 }
+
+/* ── ADMIN DARK THEME OVERRIDES ── */
+.admin-table th { background: var(--navy2) !important; color: var(--slate2) !important; }
+.admin-table td { border-color: rgba(255,255,255,0.06) !important; color: var(--slate2) !important; }
+.admin-table tr:hover td { background: rgba(212,168,83,0.05) !important; }
+.admin-input { background: var(--navy2) !important; border-color: rgba(212,168,83,0.2) !important; color: var(--white) !important; }
+.admin-input::placeholder { color: var(--slate) !important; }
+.admin-input:focus { border-color: var(--gold) !important; }
+.admin-label { color: var(--slate2) !important; }
