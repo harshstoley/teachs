@@ -138,3 +138,12 @@ tr:hover td { background: rgba(212,168,83,0.04); }
   .how-grid { grid-template-columns: 1fr !important; }
   h1 { font-size: 2rem !important; }
 }
+
+/* ── MOBILE GLOBAL FIXES ── */
+@media (max-width: 600px) {
+  .container { padding: 0 16px !important; }
+  h1 { font-size: 1.9rem !important; line-height: 1.2 !important; }
+  h2 { font-size: 1.5rem !important; }
+  .modal-box { padding: 24px 18px !important; margin: 10px !important; }
+  .tab-btn { font-size: 0.8rem !important; padding: 7px 11px !important; }
+}
