@@ -8,11 +8,22 @@ const auth = [authenticate, requireRole('teacher', 'admin')];
 router.get('/dashboard', ...auth, async (req, res) => {
   try {
     const tid = req.user.id;
-    const [students] = await db.query(
-      `SELECT DISTINCT u.id, u.name, sp.student_class, ta.subject FROM teacher_assignments ta
-       JOIN users u ON ta.student_id = u.id LEFT JOIN student_profiles sp ON u.id = sp.user_id
-       WHERE ta.teacher_id = ? AND ta.is_active = 1`, [tid]
-    );
+    let students;
+    try {
+      [students] = await db.query(
+        `SELECT DISTINCT u.id, u.name, sp.student_class, sp.enrollment_no, ta.subject
+         FROM teacher_assignments ta JOIN users u ON ta.student_id = u.id
+         LEFT JOIN student_profiles sp ON u.id = sp.user_id
+         WHERE ta.teacher_id = ? AND ta.is_active = 1`, [tid]
+      );
+    } catch(e) {
+      [students] = await db.query(
+        `SELECT DISTINCT u.id, u.name, sp.student_class, ta.subject
+         FROM teacher_assignments ta JOIN users u ON ta.student_id = u.id
+         LEFT JOIN student_profiles sp ON u.id = sp.user_id
+         WHERE ta.teacher_id = ? AND ta.is_active = 1`, [tid]
+      );
+    }
     const [schedule] = await db.query(
       `SELECT s.*, u.name as student_name FROM schedules s JOIN users u ON s.student_id = u.id
        WHERE s.teacher_id = ? AND s.is_active = 1 ORDER BY s.day_of_week, s.start_time`, [tid]
@@ -48,18 +59,25 @@ router.post('/homework', ...auth, async (req, res) => {
   }
 });
 
-// GET /api/teacher/homework-all — all homework assigned by this teacher
+// GET /api/teacher/homework-all
 router.get('/homework-all', ...auth, async (req, res) => {
   try {
-    const [rows] = await db.query(
-      `SELECT h.*, u.name as student_name FROM homework h JOIN users u ON h.student_id = u.id
-       WHERE h.teacher_id = ? ORDER BY h.id DESC`, [req.user.id]
-    );
+    let rows;
+    try {
+      [rows] = await db.query(
+        `SELECT h.*, u.name as student_name, sp.enrollment_no FROM homework h 
+         JOIN users u ON h.student_id = u.id
+         LEFT JOIN student_profiles sp ON u.id = sp.user_id
+         WHERE h.teacher_id = ? ORDER BY h.id DESC`, [req.user.id]
+      );
+    } catch(e) {
+      [rows] = await db.query(
+        `SELECT h.*, u.name as student_name FROM homework h JOIN users u ON h.student_id = u.id
+         WHERE h.teacher_id = ? ORDER BY h.id DESC`, [req.user.id]
+      );
+    }
     res.json(rows);
-  } catch (err) {
-    console.error('homework-all error:', err.message);
-    res.status(500).json({ error: err.message });
-  }
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 // GET /api/teacher/homework-submitted — only submitted ones
@@ -97,14 +115,24 @@ router.put('/homework/:id/grade', ...auth, async (req, res) => {
   } catch (err) { res.status(500).json({ error: 'Failed to grade homework' }); }
 });
 
-// GET /api/teacher/doubts-for-me — ALL doubts assigned to this teacher
+// GET /api/teacher/doubts-for-me
 router.get('/doubts-for-me', ...auth, async (req, res) => {
   try {
-    const [rows] = await db.query(
-      `SELECT d.*, u.name as student_name FROM doubts d JOIN users u ON d.student_id = u.id
-       WHERE d.teacher_id = ? ORDER BY FIELD(d.status,'pending','answered'), d.created_at DESC`,
-      [req.user.id]
-    );
+    let rows;
+    try {
+      [rows] = await db.query(
+        `SELECT d.*, u.name as student_name, sp.enrollment_no FROM doubts d 
+         JOIN users u ON d.student_id = u.id
+         LEFT JOIN student_profiles sp ON u.id = sp.user_id
+         WHERE d.teacher_id = ? ORDER BY FIELD(d.status,'pending','answered'), d.created_at DESC`,
+        [req.user.id]
+      );
+    } catch(e) {
+      [rows] = await db.query(
+        `SELECT d.*, u.name as student_name FROM doubts d JOIN users u ON d.student_id = u.id
+         WHERE d.teacher_id = ? ORDER BY d.created_at DESC`, [req.user.id]
+      );
+    }
     res.json(rows);
   } catch (err) { res.status(500).json({ error: 'Failed to fetch doubts' }); }
 });
@@ -220,12 +248,26 @@ router.post('/schedule-class', ...auth, async (req, res) => {
 // GET /api/teacher/students
 router.get('/students', ...auth, async (req, res) => {
   try {
-    const [rows] = await db.query(
-      `SELECT DISTINCT u.id, u.name, u.email, u.phone, sp.student_class, sp.parent_name, sp.parent_phone, sp.enrollment_no, ta.subject
-       FROM teacher_assignments ta JOIN users u ON ta.student_id = u.id
-       LEFT JOIN student_profiles sp ON u.id = sp.user_id
-       WHERE ta.teacher_id = ? AND ta.is_active = 1`, [req.user.id]
-    );
+    let rows;
+    try {
+      [rows] = await db.query(
+        `SELECT DISTINCT u.id, u.name, u.email, u.phone, sp.student_class, sp.parent_name, sp.parent_phone, sp.enrollment_no, ta.subject
+         FROM teacher_assignments ta JOIN users u ON ta.student_id = u.id
+         LEFT JOIN student_profiles sp ON u.id = sp.user_id
+         WHERE ta.teacher_id = ? AND ta.is_active = 1`, [req.user.id]
+      );
+    } catch(e) {
+      // fallback if enrollment_no column doesn't exist yet
+      [rows] = await db.query(
+        `SELECT DISTINCT u.id, u.name, u.email, u.phone, sp.student_class, sp.parent_name, sp.parent_phone, ta.subject
+         FROM teacher_assignments ta JOIN users u ON ta.student_id = u.id
+         LEFT JOIN student_profiles sp ON u.id = sp.user_id
+         WHERE ta.teacher_id = ? AND ta.is_active = 1`, [req.user.id]
+      );
+    }
+    res.json(rows);
+  } catch (err) { res.status(500).json({ error: 'Failed to fetch students' }); }
+});
     res.json(rows);
   } catch (err) { res.status(500).json({ error: 'Failed to fetch students' }); }
 });

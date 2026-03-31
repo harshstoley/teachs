@@ -46,7 +46,7 @@ function ScheduleTab({ students, showMsg }) {
             <label className="form-label">Student *</label>
             <select value={form.student_id} onChange={e=>setForm({...form,student_id:e.target.value})} className="form-input" required>
               <option value="">Select Student</option>
-              {students.map(s=><option key={`${s.id}-${s.subject}`} value={s.id}>{s.name}{s.enrollment_no?` [${s.enrollment_no}]`:''} (Cl {s.student_class}) – {s.subject}</option>)}
+              {students.map(s=><option key={`${s.id}-${s.subject}`} value={s.id}>{s.enrollment_no?`[${s.enrollment_no}] `:''}{s.name} · Cl {s.student_class} · {s.subject}</option>)}
             </select>
           </div>
           <div className="form-group"><label className="form-label">Subject</label><input value={form.subject} onChange={e=>setForm({...form,subject:e.target.value})} className="form-input" placeholder="e.g. Mathematics"/></div>
@@ -197,10 +197,14 @@ export default function TeacherDashboard() {
     </div>
   );
 
+  const studentLabel = s => s.enrollment_no
+    ? `${s.name} [${s.enrollment_no}] · Cl ${s.student_class} · ${s.subject}`
+    : `${s.name} · Cl ${s.student_class} · ${s.subject}`;
+
   const StudentSelect = ({ value, onChange }) => (
     <select value={value} onChange={onChange} className="form-input" required>
       <option value="">Select Student</option>
-      {students.map(s=><option key={`${s.id}-${s.subject}`} value={s.id}>{s.name} {s.enrollment_no ? `[${s.enrollment_no}]` : ''} (Cl {s.student_class}) – {s.subject}</option>)}
+      {students.map(s=><option key={`${s.id}-${s.subject}`} value={s.id}>{studentLabel(s)}</option>)}
     </select>
   );
 
@@ -268,7 +272,7 @@ export default function TeacherDashboard() {
                 <h4 style={{marginBottom:16,color:'var(--text)'}}>Schedule</h4>
                 {data.schedule?.length ? data.schedule.map(s=>(
                   <div key={s.id} style={{display:'flex',justifyContent:'space-between',padding:'9px 0',borderBottom:'1px solid var(--border)',fontSize:'0.875rem'}}>
-                    <div><strong style={{color:'var(--text)'}}>{s.student_name}</strong> <span style={{color:'var(--text2)'}}>– {s.subject}</span></div>
+                    <div><strong style={{color:'var(--text)'}}>{s.student_name}</strong>{s.enrollment_no&&<span style={{fontSize:'0.7rem',color:'var(--sapphire)',fontWeight:700,marginLeft:5}}>[{s.enrollment_no}]</span>} <span style={{color:'var(--text2)'}}>– {s.subject}</span></div>
                     <span className="badge badge-sapphire" style={{fontSize:'0.68rem'}}>{DAY[s.day_of_week]} {s.start_time?.slice(0,5)}</span>
                   </div>
                 )) : <p style={{color:'var(--text3)',fontSize:'0.88rem'}}>No schedule assigned.</p>}
@@ -362,7 +366,7 @@ export default function TeacherDashboard() {
                         <div>
                           <div style={{fontWeight:700,fontSize:'0.9rem',color:'var(--text)'}}>{hw.title}</div>
                           <div style={{fontSize:'0.75rem',color:'var(--text3)',marginTop:2}}>
-                            For: <strong>{hw.student_name}</strong> · {hw.subject}
+                            <strong>{hw.student_name}</strong>{hw.enrollment_no&&<span style={{color:'var(--sapphire)',fontWeight:700,marginLeft:4}}>[{hw.enrollment_no}]</span>} · {hw.subject}
                             {hw.created_at && <span> · Assigned: {new Date(hw.created_at).toLocaleDateString('en-IN')}</span>}
                             {hw.due_date && <span> · Due: {new Date(hw.due_date).toLocaleDateString('en-IN')}</span>}
                           </div>
@@ -403,7 +407,7 @@ export default function TeacherDashboard() {
                       <div style={{display:'flex',gap:8,alignItems:'center'}}>
                         <div style={{width:32,height:32,borderRadius:'50%',background:'linear-gradient(135deg, var(--sapphire) 0%, var(--sky) 100%)',display:'flex',alignItems:'center',justifyContent:'center',color:'white',fontWeight:700,fontSize:'0.85rem'}}>{d.student_name?.[0]}</div>
                         <div>
-                          <span style={{fontWeight:700,fontSize:'0.88rem',color:'var(--sapphire)'}}>{d.student_name}</span>
+                          <span style={{fontWeight:700,fontSize:'0.88rem',color:'var(--sapphire)'}}>{d.student_name}</span>{d.enrollment_no&&<span style={{fontSize:'0.75rem',color:'var(--text3)',marginLeft:6}}>[{d.enrollment_no}]</span>}
                           {d.subject && <span className="badge badge-sapphire" style={{marginLeft:8,fontSize:'0.65rem'}}>{d.subject}</span>}
                         </div>
                       </div>
