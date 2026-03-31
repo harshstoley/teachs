@@ -82,6 +82,11 @@ export default function StudentDashboard() {
               <div style={{ position: 'absolute', right: -20, top: -20, width: 120, height: 120, borderRadius: '50%', background: 'rgba(59,114,245,0.15)' }} />
               <h3 style={{ color: 'white', marginBottom: 4, fontFamily: 'var(--font-display)', fontSize: '1.4rem' }}>Hello, {user?.name?.split(' ')[0]}! 👋</h3>
               <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: '0.87rem' }}>Here's your learning summary for today.</p>
+              {data.profile?.enrollment_no && (
+                <div style={{ display:'inline-block', marginTop:10, background:'rgba(255,255,255,0.12)', border:'1px solid rgba(255,255,255,0.2)', padding:'4px 14px', borderRadius:100, fontSize:'0.78rem', color:'white', fontWeight:700, letterSpacing:'0.05em' }}>
+                  🎓 Enrollment ID: {data.profile.enrollment_no}
+                </div>
+              )}
             </div>
             <div className="grid-4" style={{ marginBottom:24 }}>
               {[

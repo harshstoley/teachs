@@ -15,6 +15,7 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import MentorWorkshop from './pages/MentorWorkshop';
 import WomensProgram from './pages/WomensProgram';
+import BecomeTutor from './pages/BecomeTutor';
 
 import StudentDashboard from './pages/StudentDashboard';
 import TeacherDashboard from './pages/TeacherDashboard';
@@ -33,8 +34,6 @@ import AdminAssign from './pages/Admin/AdminAssign';
 import AdminSchedule from './pages/Admin/AdminSchedule';
 import AdminAnnouncements from './pages/Admin/AdminAnnouncements';
 
-const PUBLIC_PAGES = ['/'];
-
 function RequireAuth({ children, role }) {
   const { user, loading } = useAuth();
   if (loading) return <div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'100vh'}}><div className="spinner"/></div>;
@@ -43,14 +42,14 @@ function RequireAuth({ children, role }) {
   return children;
 }
 
-function Layout({ children, noNav }) {
+function Layout({ children }) {
   const { user } = useAuth();
   const isDashboard = window.location.pathname.startsWith('/dashboard') || window.location.pathname.startsWith('/admin');
   return (
     <>
       {!isDashboard && <Navbar />}
       <main className={!isDashboard ? 'page-offset' : ''}>{children}</main>
-      {!isDashboard && !noNav && <Footer />}
+      {!isDashboard && <Footer />}
       <WhatsAppButton />
       {!isDashboard && <ChatBot />}
     </>
@@ -63,23 +62,17 @@ export default function App() {
       <Router>
         <Layout>
           <Routes>
-            {/* Public */}
             <Route path="/" element={<Home />} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/practice-tests" element={<PracticeTests />} />
             <Route path="/practice-tests/:id" element={<TestDetail />} />
             <Route path="/mentor-workshop" element={<MentorWorkshop />} />
             <Route path="/womens-program" element={<WomensProgram />} />
+            <Route path="/become-tutor" element={<BecomeTutor />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
-
-            {/* Student */}
             <Route path="/dashboard/student" element={<RequireAuth role="student"><StudentDashboard /></RequireAuth>} />
-
-            {/* Teacher */}
             <Route path="/dashboard/teacher" element={<RequireAuth role="teacher"><TeacherDashboard /></RequireAuth>} />
-
-            {/* Admin */}
             <Route path="/admin" element={<RequireAuth role="admin"><AdminDashboard /></RequireAuth>} />
             <Route path="/admin/users" element={<RequireAuth role="admin"><AdminUsers /></RequireAuth>} />
             <Route path="/admin/pricing" element={<RequireAuth role="admin"><AdminPricing /></RequireAuth>} />
@@ -93,7 +86,6 @@ export default function App() {
             <Route path="/admin/assign" element={<RequireAuth role="admin"><AdminAssign /></RequireAuth>} />
             <Route path="/admin/schedule" element={<RequireAuth role="admin"><AdminSchedule /></RequireAuth>} />
             <Route path="/admin/announcements" element={<RequireAuth role="admin"><AdminAnnouncements /></RequireAuth>} />
-
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </Layout>

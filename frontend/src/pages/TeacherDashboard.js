@@ -200,7 +200,7 @@ export default function TeacherDashboard() {
   const StudentSelect = ({ value, onChange }) => (
     <select value={value} onChange={onChange} className="form-input" required>
       <option value="">Select Student</option>
-      {students.map(s=><option key={`${s.id}-${s.subject}`} value={s.id}>{s.name} (Cl {s.student_class}) – {s.subject}</option>)}
+      {students.map(s=><option key={`${s.id}-${s.subject}`} value={s.id}>{s.name} {s.enrollment_no ? `[${s.enrollment_no}]` : ''} (Cl {s.student_class}) – {s.subject}</option>)}
     </select>
   );
 
@@ -287,7 +287,7 @@ export default function TeacherDashboard() {
                 <div key={`${s.id}-${i}`} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'12px 0',borderBottom:'1px solid var(--border)',flexWrap:'wrap',gap:8}}>
                   <div style={{display:'flex',alignItems:'center',gap:12}}>
                     <div style={{width:38,height:38,borderRadius:'50%',background:'linear-gradient(135deg, var(--sapphire) 0%, var(--sky) 100%)',display:'flex',alignItems:'center',justifyContent:'center',color:'white',fontWeight:700}}>{s.name[0]}</div>
-                    <div><div style={{fontWeight:600,fontSize:'0.9rem',color:'var(--text)'}}>{s.name}</div><div style={{fontSize:'0.75rem',color:'var(--text3)'}}>Class {s.student_class} · {s.parent_name||'No parent info'}</div></div>
+                    <div><div style={{fontWeight:600,fontSize:'0.9rem',color:'var(--text)'}}>{s.name}</div><div style={{fontSize:'0.75rem',color:'var(--text3)',marginTop:2}}>Class {s.student_class} · {s.parent_name||'No parent info'}</div>{s.enrollment_no&&<div style={{fontSize:'0.7rem',color:'var(--emerald2)',fontWeight:700,marginTop:2}}>ID: {s.enrollment_no}</div>}</div>
                   </div>
                   <span className="badge badge-sapphire">{s.subject}</span>
                 </div>
