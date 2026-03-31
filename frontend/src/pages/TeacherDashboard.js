@@ -46,7 +46,7 @@ function ScheduleTab({ students, showMsg }) {
             <label className="form-label">Student *</label>
             <select value={form.student_id} onChange={e=>setForm({...form,student_id:e.target.value})} className="form-input" required>
               <option value="">Select Student</option>
-              {students.map(s=><option key={`${s.id}-${s.subject}`} value={s.id}>{s.name} (Cl {s.student_class}) – {s.subject}</option>)}
+              {students.map(s=><option key={`${s.id}-${s.subject}`} value={s.id}>{s.name}{s.enrollment_no?` [${s.enrollment_no}]`:''} (Cl {s.student_class}) – {s.subject}</option>)}
             </select>
           </div>
           <div className="form-group"><label className="form-label">Subject</label><input value={form.subject} onChange={e=>setForm({...form,subject:e.target.value})} className="form-input" placeholder="e.g. Mathematics"/></div>

@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
-const Logo = ({ size = 36 }) => (
+const TeachsLogo = ({ size = 36 }) => (
   <svg width={size} height={size} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="50" cy="18" r="13" fill="#3B72F5"/>
-    <path d="M50 31 C50 31 18 42 18 55 C18 55 34 50 50 48 C66 50 82 55 82 55 C82 42 50 31 50 31Z" fill="#1A3A8F"/>
-    <rect x="44" y="48" width="12" height="30" rx="6" fill="#1A3A8F"/>
+    <circle cx="50" cy="18" r="13" fill="#0099B2"/>
+    <path d="M50 31 C50 31 18 42 18 55 C18 55 34 50 50 48 C66 50 82 55 82 55 C82 42 50 31 50 31Z" fill="#1B3A6B" rx="8"/>
+    <rect x="44" y="48" width="12" height="30" rx="6" fill="#1B3A6B"/>
   </svg>
 );
 
@@ -17,7 +17,7 @@ export default function Navbar() {
   const location = useLocation();
 
   useEffect(() => {
-    const h = () => setScrolled(window.scrollY > 12);
+    const h = () => setScrolled(window.scrollY > 10);
     window.addEventListener('scroll', h);
     return () => window.removeEventListener('scroll', h);
   }, []);
@@ -36,44 +36,41 @@ export default function Navbar() {
     { to: '/practice-tests', label: 'Tests' },
     { to: '/mentor-workshop', label: 'Workshop' },
     { to: '/womens-program', label: "Women's" },
+    { to: '/become-tutor', label: 'Become a Tutor' },
   ];
-
-  const isActive = (to) => to === '/' ? location.pathname === '/' : location.pathname.startsWith(to);
 
   return (
     <>
       <nav style={{
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
-        height: 'var(--nav-h)',
-        background: scrolled ? 'rgba(11,17,32,0.96)' : 'rgba(11,17,32,0.92)',
-        backdropFilter: 'blur(16px)',
-        borderBottom: scrolled ? '1px solid rgba(59,114,245,0.20)' : '1px solid rgba(59,114,245,0.10)',
+        height: 'var(--nav-height)',
+        background: scrolled ? 'rgba(12,22,40,0.97)' : 'rgba(12,22,40,0.96)',
+        backdropFilter: 'blur(12px)',
+        borderBottom: '1px solid rgba(212,168,83,0.15)',
         transition: 'all 0.3s',
-        boxShadow: scrolled ? '0 4px 32px rgba(0,0,0,0.25)' : 'none',
+        boxShadow: scrolled ? '0 4px 24px rgba(0,0,0,0.2)' : 'none',
       }}>
         <div className="container flex-between" style={{ height: '100%' }}>
           {/* Logo */}
-          <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 11, textDecoration: 'none' }}>
-            <Logo size={34} />
+          <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
+            <TeachsLogo size={34} />
             <div>
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.55rem', fontWeight: 700, color: 'white', lineHeight: 1, letterSpacing: '-0.5px' }}>
-                Teach<span style={{ color: 'var(--amber2)' }}>s</span>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.45rem', fontWeight: 700, color: 'var(--white)', lineHeight: 1, letterSpacing: '-0.5px' }}>
+                Teach<span style={{ color: 'var(--gold)' }}>s</span>
               </div>
-              <div style={{ fontSize: '0.58rem', color: 'rgba(255,255,255,0.40)', letterSpacing: '0.12em', lineHeight: 1, marginTop: 2, textTransform: 'uppercase' }}>
-                Dual-Teacher Platform
+              <div style={{ fontSize: '0.6rem', color: 'var(--slate)', letterSpacing: '0.02em', lineHeight: 1, marginTop: 2 }}>
+                Your Child's Most Trusted Tutor
               </div>
             </div>
           </Link>
 
           {/* Desktop Links */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 2 }} className="desk-nav">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }} className="desk-nav">
             {links.map(l => (
               <Link key={l.to} to={l.to} style={{
-                color: isActive(l.to) ? 'var(--amber2)' : 'rgba(255,255,255,0.65)',
-                fontSize: '0.88rem', fontWeight: 500, padding: '8px 15px', borderRadius: 10,
-                transition: 'all 0.2s',
-                background: isActive(l.to) ? 'rgba(224,156,26,0.10)' : 'transparent',
-                borderBottom: isActive(l.to) ? '2px solid var(--amber2)' : '2px solid transparent',
+                color: location.pathname === l.to ? 'var(--gold)' : 'var(--slate2)',
+                fontSize: '0.9rem', fontWeight: 500, padding: '8px 14px', borderRadius: 8,
+                transition: 'all 0.2s', background: location.pathname === l.to ? 'rgba(212,168,83,0.08)' : 'transparent',
               }}>{l.label}</Link>
             ))}
           </div>
@@ -82,79 +79,48 @@ export default function Navbar() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }} className="desk-nav">
             {!loading && user ? (
               <>
-                <Link to={getDash()} style={{
-                  color: 'rgba(255,255,255,0.80)', fontSize: '0.87rem', fontWeight: 500,
-                  padding: '8px 16px', borderRadius: 10,
-                  background: 'rgba(59,114,245,0.15)', border: '1px solid rgba(59,114,245,0.25)',
-                }}>Dashboard</Link>
-                <button onClick={logout} style={{
-                  background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.15)',
-                  borderRadius: 10, padding: '8px 16px', color: 'rgba(255,255,255,0.65)',
-                  fontSize: '0.85rem', cursor: 'pointer', fontFamily: 'var(--font-body)',
-                  transition: 'all 0.2s',
-                }}>Logout</button>
+                <Link to={getDash()} style={{ color: 'var(--slate2)', fontSize: '0.88rem', fontWeight: 500, padding: '8px 14px', borderRadius: 8, background: 'rgba(255,255,255,0.06)' }}>Dashboard</Link>
+                <button onClick={logout} style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 8, padding: '8px 16px', color: 'var(--slate2)', fontSize: '0.85rem', cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Logout</button>
               </>
             ) : !loading ? (
               <>
-                <Link to="/login" style={{
-                  color: 'rgba(255,255,255,0.65)', fontSize: '0.87rem', fontWeight: 500,
-                  padding: '8px 16px', borderRadius: 10, transition: 'color 0.2s',
-                }}>Login</Link>
-                <Link to="/pricing" style={{
-                  background: 'linear-gradient(135deg, var(--amber) 0%, var(--amber2) 100%)',
-                  color: 'var(--ink)', fontWeight: 700, padding: '9px 20px',
-                  borderRadius: 10, fontSize: '0.88rem', transition: 'all 0.2s',
-                  boxShadow: '0 4px 16px rgba(200,130,10,0.35)',
-                }}>Book Free Demo</Link>
+                <Link to="/login" style={{ color: 'var(--slate2)', fontSize: '0.88rem', fontWeight: 500, padding: '8px 14px', borderRadius: 8, transition: 'color 0.2s' }}>Login</Link>
+                <Link to="/pricing" style={{ background: 'var(--gold)', color: 'var(--navy)', fontWeight: 700, padding: '9px 20px', borderRadius: 8, fontSize: '0.9rem', transition: 'all 0.2s' }}>Book Free Demo</Link>
               </>
             ) : null}
           </div>
 
           {/* Hamburger */}
-          <button onClick={() => setMenuOpen(!menuOpen)} className="ham-btn" style={{
-            display: 'none', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)',
-            borderRadius: 10, padding: '8px 10px', flexDirection: 'column', gap: 5, cursor: 'pointer',
-          }}>
-            {[0,1,2].map(i => (
-              <span key={i} style={{
-                width: 22, height: 2, background: 'white', display: 'block', transition: 'all 0.3s',
-                transform: menuOpen ? (i === 0 ? 'rotate(45deg) translateY(7px)' : i === 2 ? 'rotate(-45deg) translateY(-7px)' : 'scaleX(0)') : 'none',
-                opacity: menuOpen && i === 1 ? 0 : 1,
-              }} />
-            ))}
+          <button onClick={() => setMenuOpen(!menuOpen)} className="ham-btn" style={{ display: 'none', background: 'none', border: 'none', padding: 8, flexDirection: 'column', gap: 5 }}>
+            <span style={{ width: 24, height: 2, background: 'var(--white)', display: 'block', transition: 'all 0.3s', transform: menuOpen ? 'rotate(45deg) translateY(7px)' : 'none' }} />
+            <span style={{ width: 24, height: 2, background: 'var(--white)', display: 'block', opacity: menuOpen ? 0 : 1 }} />
+            <span style={{ width: 24, height: 2, background: 'var(--white)', display: 'block', transition: 'all 0.3s', transform: menuOpen ? 'rotate(-45deg) translateY(-7px)' : 'none' }} />
           </button>
         </div>
 
         {/* Mobile Menu */}
         {menuOpen && (
-          <div style={{
-            background: 'rgba(11,17,32,0.98)', borderTop: '1px solid rgba(59,114,245,0.15)',
-            padding: '16px 20px 24px', backdropFilter: 'blur(20px)',
-          }}>
+          <div style={{ background: 'var(--navy)', borderTop: '1px solid rgba(212,168,83,0.15)', padding: '16px 20px' }}>
             {links.map(l => (
-              <Link key={l.to} to={l.to} style={{
-                display: 'flex', alignItems: 'center', gap: 10,
-                color: isActive(l.to) ? 'var(--amber2)' : 'rgba(255,255,255,0.75)',
-                padding: '13px 4px', fontWeight: 500, fontSize: '0.95rem',
-                borderBottom: '1px solid rgba(255,255,255,0.06)',
-              }}>{l.label}</Link>
+              <Link key={l.to} to={l.to} style={{ display: 'block', color: location.pathname === l.to ? 'var(--gold)' : 'var(--slate2)', padding: '12px 0', fontWeight: 500, borderBottom: '1px solid rgba(255,255,255,0.05)' }}>{l.label}</Link>
             ))}
-            <div style={{ display: 'flex', gap: 10, marginTop: 18 }}>
+            <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
               {!loading && user ? (
                 <>
-                  <Link to={getDash()} style={{ flex: 1, textAlign: 'center', background: 'linear-gradient(135deg,var(--amber),var(--amber2))', color: 'var(--ink)', fontWeight: 700, padding: '12px', borderRadius: 10, fontSize: '0.9rem' }}>Dashboard</Link>
-                  <button onClick={logout} style={{ flex: 1, background: 'rgba(255,255,255,0.08)', color: 'white', fontWeight: 600, padding: '12px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.15)', cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Logout</button>
+                  <Link to={getDash()} style={{ flex: 1, textAlign: 'center', background: 'var(--gold)', color: 'var(--navy)', fontWeight: 700, padding: '10px', borderRadius: 8, fontSize: '0.9rem' }}>Dashboard</Link>
+                  <button onClick={logout} style={{ flex: 1, background: 'rgba(255,255,255,0.08)', color: 'var(--white)', fontWeight: 600, padding: '10px', borderRadius: 8, border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Logout</button>
                 </>
               ) : (
                 <>
-                  <Link to="/login" style={{ flex: 1, textAlign: 'center', background: 'rgba(59,114,245,0.15)', color: 'rgba(255,255,255,0.85)', fontWeight: 600, padding: '12px', borderRadius: 10, fontSize: '0.9rem', border: '1px solid rgba(59,114,245,0.25)' }}>Login</Link>
-                  <Link to="/pricing" style={{ flex: 1, textAlign: 'center', background: 'linear-gradient(135deg,var(--amber),var(--amber2))', color: 'var(--ink)', fontWeight: 700, padding: '12px', borderRadius: 10, fontSize: '0.9rem' }}>Free Demo</Link>
+                  <Link to="/login" style={{ flex: 1, textAlign: 'center', background: 'rgba(255,255,255,0.08)', color: 'var(--white)', fontWeight: 600, padding: '10px', borderRadius: 8, fontSize: '0.9rem' }}>Login</Link>
+                  <Link to="/pricing" style={{ flex: 1, textAlign: 'center', background: 'var(--gold)', color: 'var(--navy)', fontWeight: 700, padding: '10px', borderRadius: 8, fontSize: '0.9rem' }}>Free Demo</Link>
                 </>
               )}
             </div>
           </div>
         )}
       </nav>
+      <style>{`@media(max-width:860px){.desk-nav{display:none!important}.ham-btn{display:flex!important}}`}</style>
     </>
   );
 }
