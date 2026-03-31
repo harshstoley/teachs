@@ -27,7 +27,7 @@ export default function BecomeTutor() {
         <div style={{position:'absolute',inset:0,backgroundImage:'linear-gradient(rgba(212,168,83,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(212,168,83,0.03) 1px,transparent 1px)',backgroundSize:'60px 60px'}}/>
         <div style={{maxWidth:1100,margin:'0 auto',padding:'0 20px',position:'relative'}}>
           <Tag text="JOIN OUR TEAM"/>
-          <h1 style={{color:'white',marginBottom:16,maxWidth:540}}>Turn Your Knowledge<br/>Into a Career</h1>
+          <h1 style={{color:'white',marginBottom:16,maxWidth:540}}>Turn Your <em style={{color:'var(--gold)',fontStyle:'normal'}}>Knowledge</em><br/>Into a Career</h1>
           <p style={{color:'var(--slate2)',maxWidth:480,marginBottom:32,lineHeight:1.75}}>Become a certified Teachs educator. Work from home, earn well, make a real difference in students' lives — all on your schedule.</p>
           <div style={{display:'flex',gap:12,flexWrap:'wrap',alignItems:'center',marginBottom:48}}>
             <a href="#apply" style={{display:'inline-block',background:'var(--gold)',color:'var(--navy)',fontWeight:700,padding:'13px 26px',borderRadius:10,textDecoration:'none',fontSize:'0.95rem'}}>Apply Now — Free →</a>

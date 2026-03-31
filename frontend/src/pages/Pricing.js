@@ -93,7 +93,7 @@ export default function Pricing() {
             <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--gold)', display: 'inline-block' }} />
             SIMPLE, HONEST PRICING
           </div>
-          <h1 style={{ color: 'white', marginBottom: 14 }}>Transparent Pricing<br/>for Every Child</h1>
+          <h1 style={{ color: 'white', marginBottom: 14 }}>Transparent <em style={{ color: 'var(--gold)', fontStyle: 'normal' }}>Pricing</em><br/>for Every Child</h1>
           <p style={{ color: 'var(--slate2)', maxWidth: 440, margin: '0 auto 28px', lineHeight: 1.75 }}>No hidden fees. No registration charges. Just great tutoring with a clear monthly plan that actually works.</p>
           <div style={{ display: 'flex', justifyContent: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 28 }}>
             {[['🎓','Free Demo Class'],['✅','No Registration Fees'],['🛡️','7-Day Refund']].map(([icon,label]) => (
@@ -107,20 +107,7 @@ export default function Pricing() {
         </div>
       </section>
 
-      {/* CATEGORY TABS */}
-      <div style={{ background: 'var(--navy2)', borderTop: '1px solid rgba(212,168,83,0.1)', borderBottom: '1px solid rgba(212,168,83,0.1)', padding: '16px 20px', overflowX: 'auto' }}>
-        <div style={{ display: 'flex', gap: 8, maxWidth: 700, margin: '0 auto', minWidth: 'max-content' }}>
-          {CATEGORIES.map(cat => (
-            <button key={cat.key} onClick={() => setActiveTab(cat.key)} style={{
-              padding: '9px 18px', borderRadius: 10, border: 'none', cursor: 'pointer', whiteSpace: 'nowrap',
-              background: activeTab === cat.key ? 'var(--gold)' : 'rgba(255,255,255,0.05)',
-              color: activeTab === cat.key ? 'var(--navy)' : 'var(--slate2)',
-              fontWeight: activeTab === cat.key ? 700 : 500, fontSize: '0.85rem', fontFamily: 'var(--font-body)',
-              transition: 'all 0.15s',
-            }}>{cat.label}</button>
-          ))}
-        </div>
-      </div>
+
 
       {/* PLANS */}
       <div style={{ maxWidth: 1100, margin: '0 auto', padding: '48px 20px' }}>

@@ -28,7 +28,7 @@ export default function WomensProgram() {
         <div style={{position:'absolute',top:-80,right:-80,width:320,height:320,borderRadius:'50%',background:'radial-gradient(circle,rgba(212,168,83,0.08),transparent 70%)'}}/>
         <div style={{maxWidth:1100,margin:'0 auto',padding:'0 20px',position:'relative'}}>
           <Tag text="WOMEN'S PROGRAM"/>
-          <h1 style={{color:'white',marginBottom:16,maxWidth:540}}>Teach. Earn. Grow.<br/>On Your Terms.</h1>
+          <h1 style={{color:'white',marginBottom:16,maxWidth:540}}>Teach. <em style={{color:'var(--gold)',fontStyle:'normal'}}>Earn.</em> Grow.<br/>On Your Terms.</h1>
           <p style={{color:'var(--slate2)',maxWidth:480,marginBottom:32,lineHeight:1.75}}>Join India's most trusted tutoring platform. Flexible hours, premium students, competitive pay — all from the comfort of your home.</p>
           <div style={{display:'flex',gap:12,flexWrap:'wrap',marginBottom:48}}>
             <a href="#apply" style={{display:'inline-block',background:'var(--gold)',color:'var(--navy)',fontWeight:700,padding:'13px 26px',borderRadius:10,textDecoration:'none',fontSize:'0.95rem'}}>Apply Now →</a>

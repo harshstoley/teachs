@@ -20,7 +20,7 @@ export default function MentorWorkshop() {
         <div style={{ position:'absolute',inset:0, backgroundImage:'linear-gradient(rgba(212,168,83,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(212,168,83,0.03) 1px,transparent 1px)', backgroundSize:'60px 60px' }}/>
         <div style={{ maxWidth:1100, margin:'0 auto', padding:'0 20px', position:'relative', textAlign:'center' }}>
           <Tag text="MENTOR WORKSHOP"/>
-          <h1 style={{ color:'white', marginBottom:14 }}>Expert Workshops for<br/>Parents & Students</h1>
+          <h1 style={{ color:'white', marginBottom:14 }}>Expert <em style={{ color:'var(--gold)', fontStyle:'normal' }}>Workshops</em> for<br/>Parents & Students</h1>
           <p style={{ color:'var(--slate2)', maxWidth:500, margin:'0 auto 32px', lineHeight:1.75 }}>Live sessions on study habits, board exam strategies, and parenting for academic success — led by verified educators with 5+ years experience.</p>
           <a href="#sessions" style={{ display:'inline-block', background:'var(--gold)', color:'var(--navy)', fontWeight:700, padding:'13px 28px', borderRadius:10, textDecoration:'none', fontSize:'0.95rem' }}>View Upcoming Sessions →</a>
         </div>

@@ -15,7 +15,7 @@ export default function PracticeTests() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    document.title = 'Practice Tests | Teachs – Class-wise Chapter-wise Tests with Solutions';
+    document.title = 'Practice Tests | Teachs – Class-wise Chapter-wise Tests';
     api.get('/tests').then(r => setTests(r.data)).catch(() => {}).finally(() => setLoading(false));
   }, []);
 
@@ -38,91 +38,116 @@ export default function PracticeTests() {
   };
 
   return (
-    <div>
-      <section style={{ background: 'var(--ink)', padding: '100px 0 72px' }}>
-        <div className="container" style={{ textAlign: 'center' }}>
-          <span className="badge badge-teal" style={{ marginBottom: 16 }}>Free Practice Tests</span>
-          <h1 style={{ color: 'white', marginBottom: 16 }}>100+ Practice Tests</h1>
-          <p style={{ color: 'rgba(255,255,255,0.7)', maxWidth: 520, margin: '0 auto', fontSize: '1.05rem' }}>
+    <div style={{ background:'var(--navy)', minHeight:'100vh' }}>
+
+      {/* HERO */}
+      <section style={{ paddingTop:'calc(var(--nav-height) + 60px)', paddingBottom:56, position:'relative', overflow:'hidden' }}>
+        <div style={{ position:'absolute', inset:0, backgroundImage:'linear-gradient(rgba(212,168,83,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(212,168,83,0.03) 1px,transparent 1px)', backgroundSize:'60px 60px' }}/>
+        <div style={{ maxWidth:1100, margin:'0 auto', padding:'0 20px', position:'relative', textAlign:'center' }}>
+          <div style={{ display:'inline-flex', alignItems:'center', gap:6, background:'rgba(212,168,83,0.1)', border:'1px solid rgba(212,168,83,0.25)', color:'var(--gold)', fontSize:'0.72rem', fontWeight:700, padding:'5px 14px', borderRadius:100, marginBottom:20, letterSpacing:'0.5px' }}>
+            <span style={{ width:5, height:5, borderRadius:'50%', background:'var(--gold)', display:'inline-block' }}/>
+            FREE PRACTICE TESTS
+          </div>
+          <h1 style={{ color:'white', marginBottom:14 }}>100+ <em style={{ color:'var(--gold)', fontStyle:'normal' }}>Practice</em> Tests</h1>
+          <p style={{ color:'var(--slate2)', maxWidth:480, margin:'0 auto 32px', lineHeight:1.75 }}>
             Class 1–10 · Subject-wise · Chapter-wise · With Complete Solutions
           </p>
+          {!user && (
+            <div style={{ display:'inline-flex', alignItems:'center', gap:12, background:'rgba(212,168,83,0.08)', border:'1px solid rgba(212,168,83,0.15)', borderRadius:12, padding:'12px 20px', flexWrap:'wrap', justifyContent:'center' }}>
+              <span style={{ color:'var(--slate2)', fontSize:'0.85rem' }}>📝 Login required to take tests.</span>
+              <Link to="/login" style={{ color:'var(--gold)', fontWeight:700, fontSize:'0.85rem' }}>Sign in →</Link>
+            </div>
+          )}
         </div>
       </section>
 
-      <section className="section">
-        <div className="container">
-          {/* Filters */}
-          <div style={{ background: 'var(--ice)', borderRadius: 16, padding: '24px 28px', marginBottom: 40, display: 'flex', gap: 24, flexWrap: 'wrap', alignItems: 'center' }}>
-            <div>
-              <label style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--ink)', marginBottom: 8, display: 'block' }}>FILTER BY CLASS</label>
-              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                {CLASSES.map(c => (
-                  <button key={c} onClick={() => setClassFilter(c)} className="btn btn-sm" style={{
-                    background: classFilter === c ? 'var(--navy)' : 'white',
-                    color: classFilter === c ? 'white' : 'var(--ink)',
-                    border: '1px solid var(--border)', padding: '6px 14px',
-                  }}>{c === 'All' ? 'All' : `Class ${c}`}</button>
-                ))}
-              </div>
-            </div>
-            <div>
-              <label style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--ink)', marginBottom: 8, display: 'block' }}>FILTER BY SUBJECT</label>
-              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                {SUBJECTS.map(s => (
-                  <button key={s} onClick={() => setSubjectFilter(s)} className="btn btn-sm" style={{
-                    background: subjectFilter === s ? 'var(--teal)' : 'white',
-                    color: subjectFilter === s ? 'white' : 'var(--ink)',
-                    border: '1px solid var(--border)', padding: '6px 14px',
-                  }}>{s}</button>
-                ))}
-              </div>
+      {/* FILTERS */}
+      <div style={{ background:'var(--navy2)', borderTop:'1px solid rgba(212,168,83,0.1)', borderBottom:'1px solid rgba(212,168,83,0.1)', padding:'16px 20px', overflowX:'auto' }}>
+        <div style={{ maxWidth:1100, margin:'0 auto', display:'flex', gap:24, flexWrap:'wrap', alignItems:'center' }}>
+          <div>
+            <div style={{ fontSize:'0.7rem', fontWeight:700, color:'var(--slate)', marginBottom:8, textTransform:'uppercase', letterSpacing:'0.08em' }}>Class</div>
+            <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
+              {CLASSES.map(c => (
+                <button key={c} onClick={() => setClassFilter(c)} style={{
+                  padding:'5px 12px', borderRadius:8, border:'none', cursor:'pointer', fontSize:'0.8rem',
+                  background: classFilter === c ? 'var(--gold)' : 'rgba(255,255,255,0.06)',
+                  color: classFilter === c ? 'var(--navy)' : 'var(--slate2)',
+                  fontWeight: classFilter === c ? 700 : 400, fontFamily:'var(--font-body)',
+                }}>{c === 'All' ? 'All' : `Cl ${c}`}</button>
+              ))}
             </div>
           </div>
-
-          {!user && (
-            <div className="alert alert-info" style={{ marginBottom: 32 }}>
-              📝 <strong>Login required to take tests.</strong> <Link to="/login">Sign in</Link> or <Link to="/signup">create an account</Link> to access full tests with solutions.
+          <div>
+            <div style={{ fontSize:'0.7rem', fontWeight:700, color:'var(--slate)', marginBottom:8, textTransform:'uppercase', letterSpacing:'0.08em' }}>Subject</div>
+            <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
+              {SUBJECTS.map(s => (
+                <button key={s} onClick={() => setSubjectFilter(s)} style={{
+                  padding:'5px 12px', borderRadius:8, border:'none', cursor:'pointer', fontSize:'0.8rem',
+                  background: subjectFilter === s ? 'var(--teal)' : 'rgba(255,255,255,0.06)',
+                  color: subjectFilter === s ? 'white' : 'var(--slate2)',
+                  fontWeight: subjectFilter === s ? 700 : 400, fontFamily:'var(--font-body)',
+                }}>{s}</button>
+              ))}
             </div>
-          )}
-
-          {loading ? (
-            <div style={{ textAlign: 'center', padding: 60 }}><div className="spinner" style={{ margin: '0 auto' }} /></div>
-          ) : filtered.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: 60, color: 'var(--ink-lighter)' }}>No tests found for selected filters.</div>
-          ) : (
-            Object.entries(grouped).map(([cls, clsTests]) => (
-              <div key={cls} style={{ marginBottom: 48 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 20 }}>
-                  <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'var(--ink)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 700, fontSize: '0.9rem', flexShrink: 0 }}>
-                    {cls.replace('Class ', '')}
-                  </div>
-                  <h3 style={{ color: 'var(--ink)' }}>{cls}</h3>
-                  <span className="badge badge-teal">{clsTests.length} tests</span>
-                </div>
-                <div className="grid-3">
-                  {clsTests.map(test => (
-                    <div key={test.id} className="card" style={{ padding: 24 }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
-                        <span className="badge badge-navy">{test.subject}</span>
-                        <span style={{ fontSize: '0.78rem', color: 'var(--ink-lighter)' }}>⏱ {test.duration_min} min</span>
-                      </div>
-                      <h4 style={{ fontSize: '1rem', marginBottom: 6, color: 'var(--ink)' }}>{test.title}</h4>
-                      <p style={{ fontSize: '0.82rem', color: 'var(--teal)', fontWeight: 600, marginBottom: 16 }}>{test.chapter}</p>
-                      <div style={{ display: 'flex', gap: 16, marginBottom: 16, fontSize: '0.8rem', color: 'var(--ink-lighter)' }}>
-                        <span>📋 {test.question_count} Questions</span>
-                        <span>📊 {test.total_marks} Marks</span>
-                      </div>
-                      <button onClick={() => handleStart(test.id)} className="btn btn-primary" style={{ width: '100%', padding: '10px' }}>
-                        {user ? 'Start Test →' : 'Login to Start'}
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))
-          )}
+          </div>
         </div>
-      </section>
+      </div>
+
+      {/* TESTS */}
+      <div style={{ maxWidth:1100, margin:'0 auto', padding:'48px 20px' }}>
+        {loading ? (
+          <div style={{ textAlign:'center', padding:60 }}><div className="spinner" style={{ margin:'0 auto', borderTopColor:'var(--gold)' }}/></div>
+        ) : filtered.length === 0 ? (
+          <div style={{ textAlign:'center', padding:'60px 20px', background:'var(--navy2)', borderRadius:20, border:'1px solid rgba(212,168,83,0.1)' }}>
+            <div style={{ fontSize:'2.5rem', marginBottom:16 }}>🔍</div>
+            <h3 style={{ color:'white', marginBottom:8 }}>No tests found</h3>
+            <p style={{ color:'var(--slate2)' }}>Try different filters to find what you are looking for.</p>
+          </div>
+        ) : (
+          Object.entries(grouped).map(([cls, clsTests]) => (
+            <div key={cls} style={{ marginBottom:56 }}>
+              <div style={{ display:'flex', alignItems:'center', gap:14, marginBottom:24 }}>
+                <div style={{ width:44, height:44, borderRadius:'50%', background:'rgba(212,168,83,0.12)', border:'1px solid rgba(212,168,83,0.25)', display:'flex', alignItems:'center', justifyContent:'center', color:'var(--gold)', fontWeight:800, fontSize:'0.9rem', flexShrink:0, fontFamily:'var(--font-body)' }}>
+                  {cls.replace('Class ', '')}
+                </div>
+                <h3 style={{ color:'white', margin:0 }}>{cls}</h3>
+                <span style={{ background:'rgba(0,153,178,0.15)', color:'var(--teal)', padding:'3px 10px', borderRadius:100, fontSize:'0.7rem', fontWeight:700 }}>{clsTests.length} tests</span>
+              </div>
+              <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(260px,100%),1fr))', gap:16 }}>
+                {clsTests.map(test => (
+                  <div key={test.id} style={{ background:'var(--navy2)', borderRadius:16, padding:'22px 18px', border:'1px solid rgba(212,168,83,0.1)', transition:'border-color 0.2s' }}>
+                    <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:12 }}>
+                      <span style={{ background:'rgba(0,153,178,0.12)', color:'var(--teal)', padding:'3px 10px', borderRadius:100, fontSize:'0.68rem', fontWeight:700 }}>{test.subject}</span>
+                      <span style={{ fontSize:'0.75rem', color:'var(--slate)' }}>⏱ {test.duration_min}m</span>
+                    </div>
+                    <h4 style={{ fontSize:'0.95rem', marginBottom:6, color:'white', fontFamily:'var(--font-body)', fontWeight:700 }}>{test.title}</h4>
+                    <p style={{ fontSize:'0.8rem', color:'var(--gold)', fontWeight:600, marginBottom:14 }}>{test.chapter}</p>
+                    <div style={{ display:'flex', gap:14, marginBottom:18, fontSize:'0.78rem', color:'var(--slate)' }}>
+                      <span>📋 {test.question_count} Qs</span>
+                      <span>📊 {test.total_marks} Marks</span>
+                    </div>
+                    <button onClick={() => handleStart(test.id)} style={{
+                      width:'100%', padding:'10px', borderRadius:10, border:'none', cursor:'pointer',
+                      background: user ? 'var(--gold)' : 'rgba(212,168,83,0.12)',
+                      color: user ? 'var(--navy)' : 'var(--gold)',
+                      fontWeight:700, fontSize:'0.88rem', fontFamily:'var(--font-body)',
+                    }}>
+                      {user ? 'Start Test →' : 'Login to Start'}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* CTA */}
+      <div style={{ background:'var(--navy2)', borderTop:'1px solid rgba(212,168,83,0.1)', padding:'48px 20px', textAlign:'center' }}>
+        <h2 style={{ color:'white', marginBottom:10 }}>Want Personalized Tutoring?</h2>
+        <p style={{ color:'var(--slate2)', marginBottom:24, maxWidth:400, margin:'0 auto 24px' }}>Get a dedicated teacher for structured lessons and weekly tests.</p>
+        <Link to="/pricing" style={{ display:'inline-block', background:'var(--gold)', color:'var(--navy)', fontWeight:700, padding:'13px 28px', borderRadius:10, textDecoration:'none', fontSize:'0.95rem' }}>View Plans →</Link>
+      </div>
     </div>
   );
 }
