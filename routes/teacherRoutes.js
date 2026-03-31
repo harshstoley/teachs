@@ -38,7 +38,7 @@ router.post('/homework', ...auth, async (req, res) => {
     const { student_id, subject, title, description, due_date } = req.body;
     if (!student_id || !title) return res.status(400).json({ error: 'Student and title required' });
     const [result] = await db.query(
-      'INSERT INTO homework (teacher_id, student_id, subject, title, description, due_date, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())',
+      'INSERT INTO homework (teacher_id, student_id, subject, title, description, due_date, status) VALUES (?, ?, ?, ?, ?, ?, ?)',
       [req.user.id, student_id, subject || '', title, description || '', due_date || null, 'pending']
     );
     res.status(201).json({ message: 'Homework assigned', id: result.insertId });
@@ -164,6 +164,37 @@ router.post('/feedback', ...auth, async (req, res) => {
     );
     res.status(201).json({ message: 'Feedback submitted' });
   } catch (err) { res.status(500).json({ error: 'Failed to submit feedback' }); }
+});
+
+// GET /api/teacher/my-schedules
+router.get('/my-schedules', ...auth, async (req, res) => {
+  try {
+    const [rows] = await db.query(
+      `SELECT s.*, u.name as student_name FROM schedules s JOIN users u ON s.student_id = u.id
+       WHERE s.teacher_id = ? AND s.is_active = 1 ORDER BY s.day_of_week, s.start_time`, [req.user.id]
+    );
+    res.json(rows);
+  } catch (err) { res.status(500).json({ error: 'Failed to fetch schedules' }); }
+});
+
+// PUT /api/teacher/schedules/:id/cancel
+router.put('/schedules/:id/cancel', ...auth, async (req, res) => {
+  try {
+    await db.query('UPDATE schedules SET is_active = 0 WHERE id = ? AND teacher_id = ?', [req.params.id, req.user.id]);
+    res.json({ message: 'Class cancelled' });
+  } catch (err) { res.status(500).json({ error: 'Failed to cancel' }); }
+});
+
+// PUT /api/teacher/schedules/:id/reschedule
+router.put('/schedules/:id/reschedule', ...auth, async (req, res) => {
+  try {
+    const { day_of_week, start_time, duration_min } = req.body;
+    await db.query(
+      'UPDATE schedules SET day_of_week=?, start_time=?, duration_min=? WHERE id=? AND teacher_id=?',
+      [day_of_week, start_time, duration_min || 60, req.params.id, req.user.id]
+    );
+    res.json({ message: 'Class rescheduled' });
+  } catch (err) { res.status(500).json({ error: 'Failed to reschedule' }); }
 });
 
 // POST /api/teacher/schedule-class

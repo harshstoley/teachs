@@ -6,6 +6,115 @@ const TABS = ['Overview','My Students','Schedule Class','Homework','Doubts','Pro
 const DAY = ['','Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 const STATUS_COLORS = { pending:'badge-amber', submitted:'badge-sapphire', graded:'badge-emerald', completed:'badge-emerald' };
 
+const DAY_NAMES = ['','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+
+function ScheduleTab({ students, showMsg }) {
+  const [form, setForm] = useState({ student_id:'', subject:'', day_of_week:1, start_time:'17:00', duration_min:60 });
+  const [schedules, setSchedules] = useState(null);
+  const [reschedule, setReschedule] = useState(null);
+
+  const load = () => api.get('/teacher/my-schedules').then(r=>setSchedules(r.data)).catch(()=>setSchedules([]));
+  useEffect(()=>{ load(); }, []);
+
+  const submit = async e => {
+    e.preventDefault();
+    try { await api.post('/teacher/schedule-class', form); showMsg('Class scheduled!'); setForm({student_id:'',subject:'',day_of_week:1,start_time:'17:00',duration_min:60}); load(); }
+    catch { showMsg('Failed to schedule.','error'); }
+  };
+
+  const cancel = async id => {
+    if (!window.confirm('Cancel this class?')) return;
+    try { await api.put(`/teacher/schedules/${id}/cancel`); showMsg('Class cancelled.'); load(); }
+    catch { showMsg('Failed.','error'); }
+  };
+
+  const submitReschedule = async e => {
+    e.preventDefault();
+    try { await api.put(`/teacher/schedules/${reschedule.id}/reschedule`, reschedule); showMsg('Rescheduled!'); setReschedule(null); load(); }
+    catch { showMsg('Failed.','error'); }
+  };
+
+  const card = { background:'white', borderRadius:16, padding:24, border:'1px solid var(--border)', boxShadow:'var(--shadow-xs)' };
+
+  return (
+    <div style={{display:'grid',gap:24}}>
+      {/* Add new class */}
+      <div style={{...card,maxWidth:540}}>
+        <h4 style={{marginBottom:20,color:'var(--text)'}}>Schedule a Class</h4>
+        <form onSubmit={submit}>
+          <div className="form-group">
+            <label className="form-label">Student *</label>
+            <select value={form.student_id} onChange={e=>setForm({...form,student_id:e.target.value})} className="form-input" required>
+              <option value="">Select Student</option>
+              {students.map(s=><option key={`${s.id}-${s.subject}`} value={s.id}>{s.name} (Cl {s.student_class}) – {s.subject}</option>)}
+            </select>
+          </div>
+          <div className="form-group"><label className="form-label">Subject</label><input value={form.subject} onChange={e=>setForm({...form,subject:e.target.value})} className="form-input" placeholder="e.g. Mathematics"/></div>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16}}>
+            <div className="form-group">
+              <label className="form-label">Day of Week</label>
+              <select value={form.day_of_week} onChange={e=>setForm({...form,day_of_week:e.target.value})} className="form-input">
+                {DAY_NAMES.slice(1).map((d,i)=><option key={i+1} value={i+1}>{d}</option>)}
+              </select>
+            </div>
+            <div className="form-group"><label className="form-label">Start Time</label><input type="time" value={form.start_time} onChange={e=>setForm({...form,start_time:e.target.value})} className="form-input"/></div>
+            <div className="form-group"><label className="form-label">Duration (min)</label><input type="number" value={form.duration_min} onChange={e=>setForm({...form,duration_min:e.target.value})} className="form-input"/></div>
+          </div>
+          <button type="submit" style={{background:'linear-gradient(135deg, var(--sapphire) 0%, var(--sapphire2) 100%)',color:'white',fontWeight:700,padding:'11px 22px',borderRadius:10,border:'none',cursor:'pointer',fontFamily:'var(--font-body)',width:'100%'}}>Schedule Class →</button>
+        </form>
+      </div>
+
+      {/* Reschedule modal */}
+      {reschedule && (
+        <div className="modal-overlay" onClick={()=>setReschedule(null)}>
+          <div className="modal-box" onClick={e=>e.stopPropagation()} style={{background:'white'}}>
+            <h4 style={{marginBottom:20,color:'var(--text)'}}>Reschedule Class — {reschedule.student_name}</h4>
+            <form onSubmit={submitReschedule}>
+              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16}}>
+                <div className="form-group">
+                  <label className="form-label">New Day</label>
+                  <select value={reschedule.day_of_week} onChange={e=>setReschedule({...reschedule,day_of_week:e.target.value})} className="form-input">
+                    {DAY_NAMES.slice(1).map((d,i)=><option key={i+1} value={i+1}>{d}</option>)}
+                  </select>
+                </div>
+                <div className="form-group"><label className="form-label">New Time</label><input type="time" value={reschedule.start_time} onChange={e=>setReschedule({...reschedule,start_time:e.target.value})} className="form-input"/></div>
+                <div className="form-group"><label className="form-label">Duration (min)</label><input type="number" value={reschedule.duration_min} onChange={e=>setReschedule({...reschedule,duration_min:e.target.value})} className="form-input"/></div>
+              </div>
+              <div style={{display:'flex',gap:10}}>
+                <button type="submit" style={{flex:1,padding:'11px',background:'linear-gradient(135deg, var(--sapphire) 0%, var(--sapphire2) 100%)',color:'white',border:'none',borderRadius:10,fontWeight:700,cursor:'pointer',fontFamily:'var(--font-body)'}}>Confirm Reschedule</button>
+                <button type="button" onClick={()=>setReschedule(null)} style={{flex:1,padding:'11px',border:'1px solid var(--border)',borderRadius:10,background:'white',cursor:'pointer',fontFamily:'var(--font-body)',fontWeight:600}}>Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Schedule list */}
+      <div style={card}>
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:16}}>
+          <h4 style={{color:'var(--text)'}}>My Scheduled Classes</h4>
+          <button onClick={load} style={{fontSize:'0.8rem',color:'var(--sapphire)',background:'none',border:'none',cursor:'pointer',fontFamily:'var(--font-body)',fontWeight:600}}>↻ Refresh</button>
+        </div>
+        {!schedules ? <div style={{display:'flex',justifyContent:'center',padding:24}}><div className="spinner"/></div> :
+         schedules.length===0 ? <p style={{color:'var(--text3)',fontSize:'0.88rem'}}>No classes scheduled yet.</p> : (
+          schedules.map(s=>(
+            <div key={s.id} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'12px 0',borderBottom:'1px solid var(--border)',flexWrap:'wrap',gap:8}}>
+              <div>
+                <div style={{fontWeight:600,fontSize:'0.9rem',color:'var(--text)'}}>{s.student_name} — {s.subject}</div>
+                <div style={{fontSize:'0.75rem',color:'var(--text3)',marginTop:2}}>{DAY_NAMES[s.day_of_week]} · {s.start_time?.slice(0,5)} · {s.duration_min} min</div>
+              </div>
+              <div style={{display:'flex',gap:8}}>
+                <button onClick={()=>setReschedule({...s})} style={{padding:'5px 12px',background:'rgba(59,114,245,0.08)',color:'var(--sapphire)',border:'1px solid rgba(59,114,245,0.2)',borderRadius:7,cursor:'pointer',fontSize:'0.78rem',fontFamily:'var(--font-body)',fontWeight:600}}>↻ Reschedule</button>
+                <button onClick={()=>cancel(s.id)} style={{padding:'5px 12px',background:'rgba(220,38,38,0.08)',color:'#dc2626',border:'1px solid rgba(220,38,38,0.2)',borderRadius:7,cursor:'pointer',fontSize:'0.78rem',fontFamily:'var(--font-body)',fontWeight:600}}>✕ Cancel</button>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function TeacherDashboard() {
   const { user, logout } = useAuth();
   const [activeTab, setActiveTab] = useState('Overview');
@@ -189,19 +298,7 @@ export default function TeacherDashboard() {
 
         {/* SCHEDULE CLASS */}
         {activeTab==='Schedule Class' && (
-          <div style={{...card,maxWidth:540}}>
-            <h4 style={{marginBottom:20,color:'var(--text)'}}>Schedule a Class</h4>
-            <form onSubmit={submitSched}>
-              <div className="form-group"><label className="form-label">Student *</label><StudentSelect value={schedForm.student_id} onChange={e=>setSchedForm({...schedForm,student_id:e.target.value})}/></div>
-              <div className="form-group"><label className="form-label">Subject</label><input value={schedForm.subject} onChange={e=>setSchedForm({...schedForm,subject:e.target.value})} className="form-input" placeholder="e.g. Mathematics"/></div>
-              <div style={fgrid}>
-                <div className="form-group"><label className="form-label">Day of Week</label><select value={schedForm.day_of_week} onChange={e=>setSchedForm({...schedForm,day_of_week:e.target.value})} className="form-input">{['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'].map((d,i)=><option key={i+1} value={i+1}>{d}</option>)}</select></div>
-                <div className="form-group"><label className="form-label">Start Time</label><input type="time" value={schedForm.start_time} onChange={e=>setSchedForm({...schedForm,start_time:e.target.value})} className="form-input"/></div>
-                <div className="form-group"><label className="form-label">Duration (min)</label><input type="number" value={schedForm.duration_min} onChange={e=>setSchedForm({...schedForm,duration_min:e.target.value})} className="form-input"/></div>
-              </div>
-              <button type="submit" style={btn()}>Schedule Class →</button>
-            </form>
-          </div>
+          <ScheduleTab students={students} showMsg={showMsg} />
         )}
 
         {/* HOMEWORK — assign + manage */}

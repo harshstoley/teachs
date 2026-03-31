@@ -13,7 +13,7 @@ router.get('/dashboard', ...auth, async (req, res) => {
       [uid]
     );
     const [teachers] = await db.query(
-      `SELECT ta.id, ta.subject, u.name as teacher_name, tp.qualification FROM teacher_assignments ta
+      `SELECT ta.id, ta.teacher_id, ta.subject, u.name as teacher_name, tp.qualification FROM teacher_assignments ta
        JOIN users u ON ta.teacher_id = u.id LEFT JOIN teacher_profiles tp ON ta.teacher_id = tp.user_id
        WHERE ta.student_id = ? AND ta.is_active = 1`, [uid]
     );
