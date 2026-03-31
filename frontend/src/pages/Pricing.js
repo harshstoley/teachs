@@ -183,7 +183,7 @@ export default function Pricing() {
                 {[
                   ['What is the Dual-Teacher Model?','Each student gets 2 teachers — one for science/math, one for languages — for deeper expertise.'],
                   ['Can I try before paying?','Yes! 100% free demo class. No registration fee. No credit card needed.'],
-                  ['What if I'm not satisfied?','7-day no-questions-asked refund on all paid plans.'],
+                  ['What if I am not satisfied?','7-day no-questions-asked refund on all paid plans.'],
                   ['Are classes online?','All classes are online via video call — anywhere in India.'],
                   ['How are teachers selected?','All teachers are verified by Teachs. Only top 5% of applicants are hired.'],
                   ['Can I change my teacher?','Yes, request a teacher change any time — no extra charge.'],
