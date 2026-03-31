@@ -42,7 +42,10 @@ router.post('/homework', ...auth, async (req, res) => {
       [req.user.id, student_id, subject || '', title, description || '', due_date || null, 'pending']
     );
     res.status(201).json({ message: 'Homework assigned', id: result.insertId });
-  } catch (err) { res.status(500).json({ error: 'Failed to assign homework' }); }
+  } catch (err) {
+    console.error('homework insert error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // GET /api/teacher/homework-all — all homework assigned by this teacher
@@ -50,10 +53,13 @@ router.get('/homework-all', ...auth, async (req, res) => {
   try {
     const [rows] = await db.query(
       `SELECT h.*, u.name as student_name FROM homework h JOIN users u ON h.student_id = u.id
-       WHERE h.teacher_id = ? ORDER BY h.created_at DESC`, [req.user.id]
+       WHERE h.teacher_id = ? ORDER BY h.id DESC`, [req.user.id]
     );
     res.json(rows);
-  } catch (err) { res.status(500).json({ error: 'Failed to fetch homework' }); }
+  } catch (err) {
+    console.error('homework-all error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // GET /api/teacher/homework-submitted — only submitted ones
