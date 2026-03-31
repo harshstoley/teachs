@@ -221,7 +221,7 @@ router.post('/schedule-class', ...auth, async (req, res) => {
 router.get('/students', ...auth, async (req, res) => {
   try {
     const [rows] = await db.query(
-      `SELECT DISTINCT u.id, u.name, u.email, u.phone, sp.student_class, sp.parent_name, sp.parent_phone, ta.subject
+      `SELECT DISTINCT u.id, u.name, u.email, u.phone, sp.student_class, sp.parent_name, sp.parent_phone, sp.enrollment_no, ta.subject
        FROM teacher_assignments ta JOIN users u ON ta.student_id = u.id
        LEFT JOIN student_profiles sp ON u.id = sp.user_id
        WHERE ta.teacher_id = ? AND ta.is_active = 1`, [req.user.id]

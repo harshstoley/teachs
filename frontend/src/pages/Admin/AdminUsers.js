@@ -73,7 +73,7 @@ export default function AdminUsers() {
             <tbody>
               {users.map(u=>(
                 <tr key={u.id}>
-                  <td style={{padding:'11px 14px',borderTop:'1px solid rgba(255,255,255,0.05)',color:'#fff',fontWeight:600,fontSize:'0.875rem'}}>{u.name}<div style={{fontSize:'0.72rem',color:'var(--slate)'}}>{u.phone}</div></td>
+                  <td style={{padding:'11px 14px',borderTop:'1px solid rgba(255,255,255,0.05)',color:'#fff',fontWeight:600,fontSize:'0.875rem'}}>{u.name}<div style={{fontSize:'0.72rem',color:'var(--slate)'}}>{u.phone}</div>{u.enrollment_no&&<div style={{fontSize:'0.68rem',color:'var(--gold)',fontWeight:700,marginTop:2}}>{u.enrollment_no}</div>}{u.teacher_code&&<div style={{fontSize:'0.68rem',color:'#0099B2',fontWeight:700,marginTop:2}}>{u.teacher_code}</div>}</td>
                   <td style={{padding:'11px 14px',borderTop:'1px solid rgba(255,255,255,0.05)',color:'var(--slate2)',fontSize:'0.82rem'}}>{u.email}</td>
                   <td style={{padding:'11px 14px',borderTop:'1px solid rgba(255,255,255,0.05)'}}><span style={{background:roleColors[u.role],color:roleText[u.role],padding:'3px 10px',borderRadius:100,fontSize:'0.7rem',fontWeight:700}}>{u.role}</span></td>
                   <td style={{padding:'11px 14px',borderTop:'1px solid rgba(255,255,255,0.05)'}}>

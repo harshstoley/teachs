@@ -9,7 +9,7 @@ router.get('/dashboard', ...auth, async (req, res) => {
   try {
     const uid = req.user.id;
     const [profile] = await db.query(
-      'SELECT u.name, u.email, u.phone, sp.student_class, sp.parent_name, sp.parent_phone FROM users u LEFT JOIN student_profiles sp ON u.id = sp.user_id WHERE u.id = ?',
+      'SELECT u.name, u.email, u.phone, sp.student_class, sp.parent_name, sp.parent_phone, sp.enrollment_no FROM users u LEFT JOIN student_profiles sp ON u.id = sp.user_id WHERE u.id = ?',
       [uid]
     );
     const [teachers] = await db.query(

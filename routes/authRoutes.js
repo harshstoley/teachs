@@ -30,13 +30,21 @@ router.post('/signup', async (req, res) => {
     );
     const userId = result.insertId;
 
-    // Create student profile
+    // Generate unique enrollment number: TCH-YEAR-XXXX
+    const year = new Date().getFullYear();
+    const [[countRow]] = await db.query("SELECT COUNT(*) as count FROM student_profiles");
+    const num = String(countRow.count + 1).padStart(4, '0');
+    const enrollment_no = `TCH-${year}-${num}`;
+
+    // Create student profile with enrollment number
     await db.query(
-      `INSERT INTO student_profiles (user_id, student_class, parent_name, parent_phone) VALUES (?, ?, ?, ?)`,
-      [userId, student_class || null, parent_name || null, parent_phone || null]
+      `INSERT INTO student_profiles (user_id, student_class, parent_name, parent_phone, enrollment_no) VALUES (?, ?, ?, ?, ?)`,
+      [userId, student_class || null, parent_name || null, parent_phone || null, enrollment_no]
     );
 
-    res.status(201).json({ message: 'Registration successful! Your account is pending admin approval.' });
+    res.status(201).json({
+      message: `Registration successful! Your Enrollment ID is ${enrollment_no}. Account is pending admin approval.`
+    });
   } catch (err) {
     console.error('Signup error:', err);
     res.status(500).json({ error: 'Registration failed' });
@@ -109,3 +117,11 @@ router.post('/change-password', authenticate, async (req, res) => {
 });
 
 module.exports = router;
+
+// Helper to generate enrollment number
+async function generateEnrollmentNo(db) {
+  const year = new Date().getFullYear();
+  const [[row]] = await db.query("SELECT COUNT(*) as count FROM users WHERE role='student'");
+  const num = String(row.count + 1).padStart(4, '0');
+  return `TCH-${year}-${num}`;
+}

@@ -34,7 +34,12 @@ router.get('/users', ...adminOnly, async (req, res) => {
     if (role) { where += ' AND role = ?'; params.push(role); }
     if (search) { where += ' AND (name LIKE ? OR email LIKE ?)'; params.push(`%${search}%`, `%${search}%`); }
     const [users] = await db.query(
-      `SELECT id, name, email, phone, role, is_active, is_approved, created_at, last_login FROM users ${where} ORDER BY created_at DESC LIMIT ? OFFSET ?`,
+      `SELECT u.id, u.name, u.email, u.phone, u.role, u.is_active, u.is_approved, u.created_at, u.last_login,
+       sp.enrollment_no, tp.teacher_code
+       FROM users u 
+       LEFT JOIN student_profiles sp ON u.id = sp.user_id AND u.role='student'
+       LEFT JOIN teacher_profiles tp ON u.id = tp.user_id AND u.role='teacher'
+       ${where} ORDER BY u.created_at DESC LIMIT ? OFFSET ?`,
       [...params, parseInt(limit), parseInt(offset)]
     );
     const [count] = await db.query(`SELECT COUNT(*) as total FROM users ${where}`, params);
@@ -86,11 +91,14 @@ router.post('/teachers', ...adminOnly, async (req, res) => {
       `INSERT INTO users (name, email, password, phone, role, is_active, is_approved) VALUES (?, ?, ?, ?, 'teacher', 1, 1)`,
       [name, email, hashed, phone || null]
     );
+    // Generate unique teacher code
+    const [[countRow]] = await db.query("SELECT COUNT(*) as count FROM teacher_profiles");
+    const teacherCode = `TCH-T-${String(countRow.count + 1).padStart(4, '0')}`;
     await db.query(
-      `INSERT INTO teacher_profiles (user_id, subjects, qualification, bio) VALUES (?, ?, ?, ?)`,
-      [result.insertId, subjects || '', qualification || '', bio || '']
+      `INSERT INTO teacher_profiles (user_id, subjects, qualification, bio, teacher_code) VALUES (?, ?, ?, ?, ?)`,
+      [result.insertId, subjects || '', qualification || '', bio || '', teacherCode]
     );
-    res.status(201).json({ message: 'Teacher account created', id: result.insertId });
+    res.status(201).json({ message: `Teacher account created. Code: ${teacherCode}`, id: result.insertId });
   } catch (err) {
     res.status(500).json({ error: 'Failed to create teacher' });
   }
