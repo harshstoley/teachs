@@ -46,6 +46,7 @@ export default function AdminSettings() {
     ['twitter','Twitter/X URL'],
     ['facebook','Facebook URL'],
     ['youtube','YouTube URL'],
+    ['linkedin','LinkedIn URL'],
   ];
 
   return (
