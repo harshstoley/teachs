@@ -1,22 +1,33 @@
 import React, { useState, useEffect } from 'react';
-import api from '../utils/api';
+import { Link } from 'react-router-dom';
 import LeadForm from '../components/LeadForm';
+import api from '../utils/api';
+
+const CATEGORIES = [
+  { key: 'class-1-3',  label: 'Class 1–3' },
+  { key: 'class-4-5',  label: 'Class 4–5' },
+  { key: 'class-6-8',  label: 'Class 6–8' },
+  { key: 'class-9-10', label: 'Class 9–10' },
+  { key: 'spoken',     label: 'Spoken English' },
+  { key: 'music',      label: 'Guitar / Piano' },
+];
 
 export default function Pricing() {
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [activeTab, setActiveTab] = useState('class-1-3');
 
   useEffect(() => {
-    document.title = 'Affordable Tutoring Plans | Teachs – Dual-Teacher Model';
+    document.title = 'Affordable Tutoring Plans | Teachs';
     api.get('/pricing').then(r => setPlans(r.data)).catch(() => {}).finally(() => setLoading(false));
   }, []);
 
   const fmt = n => n > 0 ? `₹${Number(n).toLocaleString('en-IN')}` : 'Free';
-  const save = (r, d) => r > 0 && d > 0 ? Math.round(((r-d)/r)*100) : 0;
-  const individual = plans.filter(p => p.plan_type === 'individual');
-  const demo = plans.filter(p => p.plan_type === 'demo');
-  const group = plans.filter(p => p.plan_type === 'group');
+  const save = (r, d) => r > 0 && d > 0 ? Math.round(((r - d) / r) * 100) : 0;
+
+  const allPlans = plans.filter(p => p.plan_type === 'individual');
+  const demoPlan = plans.find(p => p.plan_type === 'demo');
   const board = plans.filter(p => p.plan_type === 'board');
 
   const PlanCard = ({ plan, highlight }) => {
@@ -24,174 +35,183 @@ export default function Pricing() {
     const pct = save(plan.regular_price, plan.discounted_price);
     return (
       <div style={{
-        background: highlight ? 'var(--navy)' : 'white',
-        border: highlight ? '2px solid var(--gold)' : '1px solid rgba(0,0,0,0.08)',
-        borderRadius: 20, padding: '28px 24px', position: 'relative',
-        boxShadow: highlight ? '0 20px 60px rgba(12,22,40,0.2)' : '0 4px 20px rgba(0,0,0,0.06)',
-        transition: 'transform 0.2s, box-shadow 0.2s', display: 'flex', flexDirection: 'column',
+        background: highlight ? 'var(--navy)' : 'var(--navy2)',
+        border: `1px solid ${highlight ? 'var(--gold)' : 'rgba(212,168,83,0.12)'}`,
+        borderRadius: 20, padding: '28px 22px', position: 'relative',
+        boxShadow: highlight ? '0 20px 60px rgba(212,168,83,0.15)' : 'none',
       }}>
         {plan.is_recommended && (
-          <div style={{ position: 'absolute', top: -13, left: '50%', transform: 'translateX(-50%)', background: 'var(--gold)', color: 'var(--navy)', padding: '4px 18px', borderRadius: 100, fontSize: '0.72rem', fontWeight: 700, whiteSpace: 'nowrap' }}>⭐ Most Popular</div>
+          <div style={{ position: 'absolute', top: -13, left: '50%', transform: 'translateX(-50%)', background: 'var(--gold)', color: 'var(--navy)', padding: '4px 16px', borderRadius: 100, fontSize: '0.7rem', fontWeight: 700, whiteSpace: 'nowrap' }}>Most Popular</div>
         )}
-        {plan.label && <span className="badge badge-teal" style={{ marginBottom: 14, alignSelf: 'flex-start' }}>{plan.label}</span>}
-        <h3 style={{ color: highlight ? 'white' : 'var(--text)', fontSize: '1.15rem', marginBottom: 4 }}>{plan.title}</h3>
-        <p style={{ color: highlight ? 'var(--gold)' : 'var(--teal)', fontWeight: 600, fontSize: '0.82rem', marginBottom: 20 }}>{plan.class_range}</p>
-        <div style={{ marginBottom: 22 }}>
+        {plan.label && <div style={{ display: 'inline-block', background: 'rgba(212,168,83,0.12)', color: 'var(--gold)', padding: '3px 12px', borderRadius: 100, fontSize: '0.68rem', fontWeight: 700, marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{plan.label}</div>}
+        <h3 style={{ color: 'white', fontSize: '1.05rem', marginBottom: 4 }}>{plan.title}</h3>
+        <p style={{ color: 'var(--teal)', fontWeight: 600, fontSize: '0.78rem', marginBottom: 18 }}>{plan.class_range}</p>
+
+        <div style={{ marginBottom: 20 }}>
           {plan.regular_price > 0 && plan.discounted_price > 0 ? (
             <>
-              <div style={{ textDecoration: 'line-through', color: highlight ? 'var(--slate)' : 'var(--slate)', fontSize: '0.9rem' }}>{fmt(plan.regular_price)}/mo</div>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginTop: 2 }}>
-                <span style={{ fontSize: '2.2rem', fontWeight: 800, color: highlight ? 'white' : 'var(--text)', lineHeight: 1 }}>{fmt(plan.discounted_price)}</span>
-                <span style={{ color: highlight ? 'var(--slate2)' : 'var(--text2)', fontSize: '0.85rem' }}>/month</span>
+              <div style={{ textDecoration: 'line-through', color: 'var(--slate)', fontSize: '0.85rem' }}>{fmt(plan.regular_price)}</div>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginTop: 2 }}>
+                <span style={{ fontSize: '2rem', fontWeight: 800, color: 'white', lineHeight: 1, fontFamily: 'var(--font-body)' }}>{fmt(plan.discounted_price)}</span>
+                <span style={{ color: 'var(--slate)', fontSize: '0.8rem' }}>/month</span>
               </div>
-              {pct > 0 && <span style={{ display: 'inline-block', background: 'rgba(42,138,94,0.1)', color: '#2A8A5E', padding: '3px 10px', borderRadius: 100, fontSize: '0.72rem', fontWeight: 700, marginTop: 6 }}>Save {pct}%</span>}
+              {pct > 0 && <span style={{ display: 'inline-block', background: 'rgba(42,138,94,0.15)', color: '#5BC8A0', padding: '2px 8px', borderRadius: 100, fontSize: '0.68rem', fontWeight: 700, marginTop: 6 }}>Save {pct}%</span>}
             </>
           ) : plan.regular_price === 0 ? (
-            <div style={{ fontSize: '2rem', fontWeight: 800, color: highlight ? '#5BC8A0' : '#2A8A5E' }}>FREE</div>
+            <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#5BC8A0' }}>FREE</div>
           ) : (
-            <div style={{ fontSize: '1.5rem', fontWeight: 800, color: highlight ? 'var(--gold)' : 'var(--navy)' }}>Custom Pricing</div>
+            <div style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--gold)' }}>Custom</div>
           )}
         </div>
-        <ul style={{ listStyle: 'none', marginBottom: 24, flex: 1 }}>
+
+        <ul style={{ listStyle: 'none', marginBottom: 22 }}>
           {features.map((f, i) => (
-            <li key={i} style={{ display: 'flex', gap: 10, marginBottom: 10, fontSize: '0.875rem', color: highlight ? 'var(--slate2)' : 'var(--text2)', alignItems: 'flex-start' }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0, marginTop: 2 }}><circle cx="12" cy="12" r="10" fill={highlight ? 'rgba(212,168,83,0.2)' : 'rgba(0,153,178,0.1)'}/><path d="M8 12l3 3 5-5" stroke={highlight ? 'var(--gold)' : 'var(--teal)'} strokeWidth="2" strokeLinecap="round"/></svg>
-              {f}
+            <li key={i} style={{ display: 'flex', gap: 8, marginBottom: 8, fontSize: '0.84rem', color: 'var(--slate2)', alignItems: 'flex-start' }}>
+              <span style={{ color: 'var(--gold)', flexShrink: 0, marginTop: 1 }}>✓</span>{f}
             </li>
           ))}
         </ul>
+
         <button onClick={() => setShowForm(true)} style={{
-          width: '100%', padding: '13px', borderRadius: 12, border: 'none', cursor: 'pointer', fontWeight: 700, fontSize: '0.95rem', fontFamily: 'var(--font-body)', transition: 'all 0.2s',
-          background: highlight ? 'var(--gold)' : 'var(--navy)', color: highlight ? 'var(--navy)' : 'white',
+          width: '100%', padding: '12px', borderRadius: 10, border: 'none', cursor: 'pointer',
+          background: highlight ? 'var(--gold)' : 'rgba(212,168,83,0.12)',
+          color: highlight ? 'var(--navy)' : 'var(--gold)',
+          fontWeight: 700, fontSize: '0.9rem', fontFamily: 'var(--font-body)',
         }}>Book Free Demo</button>
       </div>
     );
   };
 
   return (
-    <div style={{ background: 'var(--cream)' }}>
-      {/* Hero */}
-      <section style={{ background: 'linear-gradient(135deg, var(--navy) 0%, #1a3a6e 100%)', padding: '100px 0 80px', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', top: -100, right: -100, width: 400, height: 400, borderRadius: '50%', background: 'rgba(212,168,83,0.06)' }}/>
-        <div style={{ position: 'absolute', bottom: -60, left: -60, width: 300, height: 300, borderRadius: '50%', background: 'rgba(0,153,178,0.06)' }}/>
-        <div className="container" style={{ textAlign: 'center', position: 'relative' }}>
-          <span className="section-tag">Transparent Pricing</span>
-          <h1 className="section-title light" style={{ marginBottom: 18 }}>Plans for Every Student</h1>
-          <p style={{ color: 'var(--slate2)', maxWidth: 500, margin: '0 auto 36px', fontSize: '1.05rem', lineHeight: 1.75 }}>No hidden fees. No registration charges. Start with a completely free demo class and see the Teachs difference.</p>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: 24, flexWrap: 'wrap', marginBottom: 36 }}>
-            {['✅ Free Demo Class','✅ No Registration Fee','✅ 7-Day Refund','✅ Cancel Anytime'].map(t => (
-              <span key={t} style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.88rem' }}>{t}</span>
+    <div style={{ background: 'var(--navy)', minHeight: '100vh' }}>
+
+      {/* HERO */}
+      <section style={{ background: 'var(--navy)', paddingTop: 'calc(var(--nav-height) + 48px)', paddingBottom: 48, position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(212,168,83,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(212,168,83,0.03) 1px,transparent 1px)', backgroundSize: '60px 60px' }} />
+        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 20px', position: 'relative', textAlign: 'center' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(212,168,83,0.1)', border: '1px solid rgba(212,168,83,0.25)', color: 'var(--gold)', fontSize: '0.72rem', fontWeight: 700, padding: '5px 14px', borderRadius: 100, marginBottom: 20, letterSpacing: '0.5px' }}>
+            <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--gold)', display: 'inline-block' }} />
+            SIMPLE, HONEST PRICING
+          </div>
+          <h1 style={{ color: 'white', marginBottom: 14 }}>Transparent Pricing<br/>for Every Child</h1>
+          <p style={{ color: 'var(--slate2)', maxWidth: 440, margin: '0 auto 28px', lineHeight: 1.75 }}>No hidden fees. No registration charges. Just great tutoring with a clear monthly plan that actually works.</p>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 28 }}>
+            {[['🎓','Free Demo Class'],['✅','No Registration Fees'],['🛡️','7-Day Refund']].map(([icon,label]) => (
+              <span key={label} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(212,168,83,0.08)', border: '1px solid rgba(212,168,83,0.2)', color: 'var(--slate2)', padding: '6px 14px', borderRadius: 100, fontSize: '0.8rem', fontWeight: 500 }}>{icon} {label}</span>
             ))}
           </div>
-          <button onClick={() => setShowForm(true)} className="btn btn-gold btn-lg">Book Free Demo Now →</button>
+          <div style={{ background: 'rgba(212,168,83,0.08)', border: '1px solid rgba(212,168,83,0.15)', borderRadius: 12, padding: '14px 20px', maxWidth: 440, margin: '0 auto 8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+            <span style={{ color: 'var(--slate2)', fontSize: '0.85rem' }}>🎓 Not sure yet? Start with a free demo class — no payment needed.</span>
+            <button onClick={() => setShowForm(true)} style={{ background: 'var(--gold)', color: 'var(--navy)', fontWeight: 700, padding: '10px 20px', borderRadius: 8, border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)', fontSize: '0.85rem', whiteSpace: 'nowrap' }}>Book Free Demo Now</button>
+          </div>
         </div>
       </section>
 
-      {/* Trust bar */}
-      <div style={{ background: 'white', borderBottom: '1px solid rgba(0,0,0,0.07)', padding: '16px 0' }}>
-        <div className="container" style={{ display: 'flex', justifyContent: 'center', gap: 40, flexWrap: 'wrap' }}>
-          {[['500+','Students Taught'],['4.9★','Average Rating'],['95%','Score Improvement'],['2','Teachers Per Student']].map(([n,l]) => (
-            <div key={l} style={{ textAlign: 'center' }}>
-              <div style={{ fontWeight: 800, fontSize: '1.1rem', color: 'var(--navy)', fontFamily: 'var(--font-body)' }}>{n}</div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text2)', fontWeight: 500 }}>{l}</div>
-            </div>
+      {/* CATEGORY TABS */}
+      <div style={{ background: 'var(--navy2)', borderTop: '1px solid rgba(212,168,83,0.1)', borderBottom: '1px solid rgba(212,168,83,0.1)', padding: '16px 20px', overflowX: 'auto' }}>
+        <div style={{ display: 'flex', gap: 8, maxWidth: 700, margin: '0 auto', minWidth: 'max-content' }}>
+          {CATEGORIES.map(cat => (
+            <button key={cat.key} onClick={() => setActiveTab(cat.key)} style={{
+              padding: '9px 18px', borderRadius: 10, border: 'none', cursor: 'pointer', whiteSpace: 'nowrap',
+              background: activeTab === cat.key ? 'var(--gold)' : 'rgba(255,255,255,0.05)',
+              color: activeTab === cat.key ? 'var(--navy)' : 'var(--slate2)',
+              fontWeight: activeTab === cat.key ? 700 : 500, fontSize: '0.85rem', fontFamily: 'var(--font-body)',
+              transition: 'all 0.15s',
+            }}>{cat.label}</button>
           ))}
         </div>
       </div>
 
-      <div style={{ padding: '80px 0' }}>
-        <div className="container">
-          {loading ? <div className="spinner" style={{ margin: '60px auto', borderTopColor: 'var(--gold)' }}/> : (
-            <>
-              {/* Individual Plans */}
-              {individual.length > 0 && (
-                <div style={{ marginBottom: 80 }}>
-                  <div className="section-header center" style={{ marginBottom: 48 }}>
-                    <span className="section-tag">Dual-Teacher Model</span>
-                    <h2 className="section-title">Individual Tutoring Plans</h2>
-                    <p className="section-sub" style={{ margin: '0 auto' }}>Two specialized teachers per student — one for each subject group. Lesson plans, weekly tests, and progress reports included.</p>
-                  </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 24 }}>
-                    {individual.map(p => <PlanCard key={p.id} plan={p} highlight={!!p.is_recommended}/>)}
-                  </div>
+      {/* PLANS */}
+      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '48px 20px' }}>
+        {loading ? <div className="spinner" style={{ margin: '60px auto', borderTopColor: 'var(--gold)' }}/> : (
+          <>
+            {/* Main plans grid */}
+            {allPlans.length > 0 && (
+              <div style={{ marginBottom: 64 }}>
+                <div style={{ textAlign: 'center', marginBottom: 36 }}>
+                  <h2 style={{ color: 'white', marginBottom: 8 }}>Dual-Teacher Plans</h2>
+                  <p style={{ color: 'var(--slate2)', fontSize: '0.9rem' }}>Two specialized teachers per student. Structured lessons, weekly tests & progress reports.</p>
                 </div>
-              )}
-
-              {/* Demo + Group */}
-              {(demo.length > 0 || group.length > 0) && (
-                <div style={{ marginBottom: 80 }}>
-                  <div className="section-header center" style={{ marginBottom: 40 }}>
-                    <h2 className="section-title">More Options</h2>
-                  </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 20 }}>
-                    {[...demo, ...group].map(p => <PlanCard key={p.id} plan={p} highlight={false}/>)}
-                  </div>
-                </div>
-              )}
-
-              {/* Board */}
-              {board.length > 0 && (
-                <div style={{ background: 'white', borderRadius: 24, padding: '48px 40px', border: '1px solid rgba(0,0,0,0.08)', marginBottom: 60, boxShadow: '0 4px 30px rgba(0,0,0,0.06)' }}>
-                  <div style={{ textAlign: 'center', marginBottom: 36 }}>
-                    <span className="section-tag">Class 11-12</span>
-                    <h2 className="section-title">Arts & Commerce Plans</h2>
-                    <p style={{ color: 'var(--text2)' }}>Custom pricing based on subjects and batch type. Contact us for a personalized quote.</p>
-                  </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
-                    {board.map(p => {
-                      const features = typeof p.features === 'string' ? JSON.parse(p.features || '[]') : p.features || [];
-                      return (
-                        <div key={p.id} style={{ background: 'var(--cream)', borderRadius: 16, padding: '22px 18px', border: '1px solid rgba(0,0,0,0.07)' }}>
-                          <h3 style={{ color: 'var(--text)', fontSize: '1rem', marginBottom: 4 }}>{p.title}</h3>
-                          <p style={{ color: 'var(--teal)', fontWeight: 600, fontSize: '0.78rem', marginBottom: 14 }}>{p.class_range}</p>
-                          <ul style={{ listStyle: 'none', marginBottom: 18 }}>
-                            {features.map((f, i) => <li key={i} style={{ fontSize: '0.83rem', color: 'var(--text2)', marginBottom: 8, display: 'flex', gap: 8 }}><span style={{ color: 'var(--teal)' }}>✓</span>{f}</li>)}
-                          </ul>
-                          <a href="https://wa.me/919876543210" target="_blank" rel="noopener noreferrer" className="btn btn-secondary" style={{ width: '100%', justifyContent: 'center', fontSize: '0.88rem' }}>💬 Get Quote</a>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-
-              {/* FAQ */}
-              <div style={{ background: 'white', borderRadius: 24, padding: '48px 40px', marginBottom: 60, boxShadow: '0 4px 20px rgba(0,0,0,0.06)' }}>
-                <h2 style={{ color: 'var(--text)', marginBottom: 32, textAlign: 'center' }}>Frequently Asked Questions</h2>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 24 }}>
-                  {[
-                    ['What is the Dual-Teacher Model?','Each student gets 2 specialized teachers — one for science/math and one for languages/social studies — for deeper expertise.'],
-                    ['Can I try before paying?','Yes! Book a completely free demo class with no registration fees or commitment required.'],
-                    ['What if I am not satisfied?','We offer a 7-day refund guarantee, no questions asked. Your satisfaction is our priority.'],
-                    ['Are classes online or offline?','All classes are conducted online via video call, making it convenient for students anywhere in India.'],
-                    ['How are teachers selected?','All teachers are verified, qualified, and trained by Teachs. We only hire the top 5% of applicants.'],
-                    ['Can I change my teacher?','Yes, you can request a teacher change at any time if you feel it is not the right fit.'],
-                  ].map(([q, a]) => (
-                    <div key={q} style={{ padding: '18px 0', borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
-                      <h4 style={{ color: 'var(--navy)', fontSize: '0.95rem', marginBottom: 8, fontFamily: 'var(--font-body)', fontWeight: 700 }}>{q}</h4>
-                      <p style={{ color: 'var(--text2)', fontSize: '0.875rem', lineHeight: 1.65 }}>{a}</p>
-                    </div>
-                  ))}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(260px,100%),1fr))', gap: 20 }}>
+                  {allPlans.map(p => <PlanCard key={p.id} plan={p} highlight={!!p.is_recommended}/>)}
                 </div>
               </div>
+            )}
 
-              {/* CTA */}
-              <div style={{ background: 'linear-gradient(135deg, var(--navy) 0%, #1a3a6e 100%)', borderRadius: 24, padding: '56px 40px', textAlign: 'center' }}>
-                <h2 style={{ color: 'white', marginBottom: 12 }}>Still have questions?</h2>
-                <p style={{ color: 'var(--slate2)', marginBottom: 28 }}>Talk to our academic counsellor. We will help you find the right plan.</p>
-                <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-                  <button onClick={() => setShowForm(true)} className="btn btn-gold btn-lg">Book Free Demo →</button>
-                  <a href="https://wa.me/919876543210" target="_blank" rel="noopener noreferrer" className="btn btn-lg" style={{ background: '#25D366', color: 'white' }}>💬 WhatsApp Us</a>
+            {/* Demo plan highlight */}
+            {demoPlan && (
+              <div style={{ background: 'linear-gradient(135deg,rgba(212,168,83,0.1),rgba(0,153,178,0.08))', border: '1px solid rgba(212,168,83,0.2)', borderRadius: 20, padding: '32px 28px', marginBottom: 48, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 20 }}>
+                <div>
+                  <div style={{ color: 'var(--gold)', fontWeight: 700, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Free to Start</div>
+                  <h3 style={{ color: 'white', fontSize: '1.2rem', marginBottom: 6 }}>Demo Class — Completely Free</h3>
+                  <p style={{ color: 'var(--slate2)', fontSize: '0.875rem' }}>No registration fee. No commitment. Just a free class with one of our expert teachers.</p>
+                </div>
+                <button onClick={() => setShowForm(true)} style={{ background: 'var(--gold)', color: 'var(--navy)', fontWeight: 700, padding: '13px 28px', borderRadius: 10, border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)', fontSize: '0.95rem', whiteSpace: 'nowrap' }}>Get Free Demo →</button>
+              </div>
+            )}
+
+            {/* Board Plans */}
+            {board.length > 0 && (
+              <div style={{ marginBottom: 64 }}>
+                <div style={{ textAlign: 'center', marginBottom: 32 }}>
+                  <h2 style={{ color: 'white', marginBottom: 8 }}>Class 11–12 Arts & Commerce</h2>
+                  <p style={{ color: 'var(--slate2)', fontSize: '0.9rem' }}>Custom pricing. Contact us for a personalized quote.</p>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(220px,100%),1fr))', gap: 16 }}>
+                  {board.map(p => {
+                    const features = typeof p.features === 'string' ? JSON.parse(p.features || '[]') : p.features || [];
+                    return (
+                      <div key={p.id} style={{ background: 'var(--navy2)', border: '1px solid rgba(212,168,83,0.12)', borderRadius: 16, padding: '22px 18px' }}>
+                        <h3 style={{ color: 'white', fontSize: '1rem', marginBottom: 4 }}>{p.title}</h3>
+                        <p style={{ color: 'var(--teal)', fontWeight: 600, fontSize: '0.76rem', marginBottom: 14 }}>{p.class_range}</p>
+                        <ul style={{ listStyle: 'none', marginBottom: 16 }}>
+                          {features.map((f, i) => <li key={i} style={{ fontSize: '0.82rem', color: 'var(--slate2)', marginBottom: 7, display: 'flex', gap: 7 }}><span style={{ color: 'var(--gold)' }}>✓</span>{f}</li>)}
+                        </ul>
+                        <a href="https://wa.me/919876543210" target="_blank" rel="noopener noreferrer" style={{ display: 'block', padding: '10px', background: '#25D366', color: 'white', fontWeight: 700, textAlign: 'center', borderRadius: 8, fontSize: '0.85rem' }}>💬 Get Quote</a>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
-            </>
-          )}
-        </div>
+            )}
+
+            {/* FAQ */}
+            <div style={{ background: 'var(--navy2)', borderRadius: 20, padding: '40px 28px', marginBottom: 48, border: '1px solid rgba(212,168,83,0.1)' }}>
+              <h2 style={{ color: 'white', textAlign: 'center', marginBottom: 32 }}>Common Questions</h2>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(280px,100%),1fr))', gap: 20 }}>
+                {[
+                  ['What is the Dual-Teacher Model?','Each student gets 2 teachers — one for science/math, one for languages — for deeper expertise.'],
+                  ['Can I try before paying?','Yes! 100% free demo class. No registration fee. No credit card needed.'],
+                  ['What if I'm not satisfied?','7-day no-questions-asked refund on all paid plans.'],
+                  ['Are classes online?','All classes are online via video call — anywhere in India.'],
+                  ['How are teachers selected?','All teachers are verified by Teachs. Only top 5% of applicants are hired.'],
+                  ['Can I change my teacher?','Yes, request a teacher change any time — no extra charge.'],
+                ].map(([q, a]) => (
+                  <div key={q} style={{ padding: '16px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                    <h4 style={{ color: 'var(--gold)', fontSize: '0.88rem', marginBottom: 6, fontFamily: 'var(--font-body)', fontWeight: 700 }}>{q}</h4>
+                    <p style={{ color: 'var(--slate2)', fontSize: '0.82rem', lineHeight: 1.65, margin: 0 }}>{a}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Bottom CTA */}
+            <div style={{ textAlign: 'center', padding: '40px 20px', background: 'rgba(212,168,83,0.06)', borderRadius: 20, border: '1px solid rgba(212,168,83,0.12)' }}>
+              <h2 style={{ color: 'white', marginBottom: 10 }}>Still have questions?</h2>
+              <p style={{ color: 'var(--slate2)', marginBottom: 24, fontSize: '0.9rem' }}>Talk to our academic counsellor. We will find the right plan for your child.</p>
+              <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+                <button onClick={() => setShowForm(true)} style={{ background: 'var(--gold)', color: 'var(--navy)', fontWeight: 700, padding: '13px 26px', borderRadius: 10, border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)', fontSize: '0.95rem' }}>Book Free Demo</button>
+                <a href="https://wa.me/919876543210" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', background: '#25D366', color: 'white', fontWeight: 700, padding: '13px 26px', borderRadius: 10, fontSize: '0.95rem' }}>💬 WhatsApp</a>
+              </div>
+            </div>
+          </>
+        )}
       </div>
 
       {showForm && (
         <div className="modal-overlay" onClick={() => setShowForm(false)}>
-          <div className="modal-box" onClick={e => e.stopPropagation()} style={{ position: 'relative' }}>
+          <div className="modal-box" onClick={e => e.stopPropagation()} style={{ position: 'relative', background: 'var(--navy2)', border: '1px solid rgba(212,168,83,0.2)' }}>
             <button onClick={() => setShowForm(false)} style={{ position: 'absolute', top: 12, right: 16, background: 'none', border: 'none', fontSize: '1.3rem', cursor: 'pointer', color: 'var(--slate)' }}>✕</button>
             <LeadForm />
           </div>
