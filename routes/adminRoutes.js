@@ -215,3 +215,24 @@ router.get('/announcements', ...adminOnly, async (req, res) => {
 });
 
 module.exports = router;
+
+// DELETE /api/admin/announcements/:id
+router.delete('/announcements/:id', ...adminOnly, async (req, res) => {
+  try {
+    await db.query('DELETE FROM announcements WHERE id = ?', [req.params.id]);
+    res.json({ message: 'Announcement deleted' });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to delete' });
+  }
+});
+
+// PUT /api/admin/announcements/:id
+router.put('/announcements/:id', ...adminOnly, async (req, res) => {
+  try {
+    const { is_active } = req.body;
+    await db.query('UPDATE announcements SET is_active = ? WHERE id = ?', [is_active, req.params.id]);
+    res.json({ message: 'Updated' });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to update' });
+  }
+});

@@ -9,6 +9,8 @@ export default function AdminAnnouncements() {
   const load=()=>api.get('/admin/announcements').then(r=>setItems(r.data)).catch(()=>{});
   useEffect(()=>{document.title='Announcements | Admin';load();},[]);
   const create=async e=>{e.preventDefault();try{await api.post('/admin/announcements',{...form,is_active:form.is_active?1:0});showMsg('Created!');load();setForm({title:'',message:'',target_role:'all',is_active:true});}catch{showMsg('Failed.');}};
+  const del=async id=>{if(!window.confirm('Delete this announcement?'))return;try{await api.delete(`/admin/announcements/${id}`);showMsg('Deleted!');load();}catch{showMsg('Failed to delete.');}};
+  const toggle=async(id,current)=>{try{await api.put(`/admin/announcements/${id}`,{is_active:current?0:1});load();}catch{showMsg('Failed.');}};
   return (
     <AdminLayout title="Announcements">
       {msg&&<div className="alert alert-success" style={{marginBottom:16}}>{msg}</div>}
@@ -24,18 +26,26 @@ export default function AdminAnnouncements() {
           </div>
         </form>
       </div>
+      <h4 style={{color:'var(--gold)',fontFamily:'var(--font-body)',fontWeight:700,fontSize:'0.82rem',textTransform:'uppercase',letterSpacing:'0.08em',marginBottom:14}}>All Announcements ({items.length})</h4>
       <div style={{display:'grid',gap:10}}>
+        {items.length===0 && <p style={{color:'var(--slate)'}}>No announcements yet.</p>}
         {items.map(a=>(
           <div key={a.id} style={{background:'#152238',border:'1px solid rgba(212,168,83,0.12)',borderRadius:12,padding:'14px 18px',display:'flex',justifyContent:'space-between',alignItems:'flex-start',gap:16}}>
-            <div>
-              <div style={{fontWeight:700,color:'#fff',fontSize:'0.88rem',marginBottom:4}}>{a.title}</div>
-              <p style={{fontSize:'0.845rem',color:'var(--slate2)',margin:0}}>{a.message}</p>
-              <div style={{marginTop:8,display:'flex',gap:8}}>
+            <div style={{flex:1}}>
+              <div style={{fontWeight:700,color:'#fff',fontSize:'0.88rem',marginBottom:4}}>{a.title||'(No title)'}</div>
+              <p style={{fontSize:'0.845rem',color:'var(--slate2)',margin:'0 0 8px'}}>{a.message}</p>
+              <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
                 <span style={{background:'rgba(0,153,178,0.12)',color:'var(--teal)',padding:'2px 10px',borderRadius:100,fontSize:'0.68rem',fontWeight:700}}>{a.target_role}</span>
                 <span style={{background:a.is_active?'rgba(42,138,94,0.15)':'rgba(192,57,43,0.15)',color:a.is_active?'#5BC8A0':'#e74c3c',padding:'2px 10px',borderRadius:100,fontSize:'0.68rem',fontWeight:700}}>{a.is_active?'Active':'Hidden'}</span>
+                <span style={{fontSize:'0.72rem',color:'var(--slate)'}}>{new Date(a.created_at).toLocaleDateString('en-IN')}</span>
               </div>
             </div>
-            <div style={{fontSize:'0.75rem',color:'var(--slate)',flexShrink:0}}>{new Date(a.created_at).toLocaleDateString('en-IN')}</div>
+            <div style={{display:'flex',gap:6,flexShrink:0}}>
+              <button onClick={()=>toggle(a.id,a.is_active)} style={{padding:'6px 12px',background:'rgba(255,255,255,0.06)',color:'var(--slate2)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:8,cursor:'pointer',fontSize:'0.78rem',fontFamily:'var(--font-body)'}}>
+                {a.is_active?'Hide':'Show'}
+              </button>
+              <button onClick={()=>del(a.id)} style={{padding:'6px 12px',background:'rgba(192,57,43,0.15)',color:'#e74c3c',border:'1px solid rgba(192,57,43,0.2)',borderRadius:8,cursor:'pointer',fontSize:'0.78rem',fontFamily:'var(--font-body)'}}>Delete</button>
+            </div>
           </div>
         ))}
       </div>

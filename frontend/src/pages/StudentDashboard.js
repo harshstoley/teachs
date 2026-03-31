@@ -206,7 +206,7 @@ export default function StudentDashboard() {
                   {tabData.map(d=>(
                     <div key={d.id} style={{background:'#0f1e35',border:'1px solid rgba(255,255,255,0.06)',borderRadius:10,padding:'14px 16px'}}>
                       <div style={{display:'flex',justifyContent:'space-between',marginBottom:8,flexWrap:'wrap',gap:6}}>
-                        <div style={{display:'flex',gap:6'}}>
+                        <div style={{display:'flex',gap:6}}>
                           <span style={{background:'rgba(212,168,83,0.12)',color:'var(--gold)',padding:'2px 10px',borderRadius:100,fontSize:'0.68rem',fontWeight:700}}>{d.subject||'General'}</span>
                         </div>
                         <span style={{background:d.status==='answered'?'rgba(42,138,94,0.15)':'rgba(212,168,83,0.12)',color:d.status==='answered'?'#5BC8A0':'var(--gold)',padding:'2px 10px',borderRadius:100,fontSize:'0.68rem',fontWeight:700}}>{d.status}</span>
