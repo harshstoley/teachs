@@ -268,8 +268,5 @@ router.get('/students', ...auth, async (req, res) => {
     res.json(rows);
   } catch (err) { res.status(500).json({ error: 'Failed to fetch students' }); }
 });
-    res.json(rows);
-  } catch (err) { res.status(500).json({ error: 'Failed to fetch students' }); }
-});
 
 module.exports = router;
