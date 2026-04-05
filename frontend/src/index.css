@@ -22,23 +22,6 @@
   --nav-height: 68px;
   --font-display: 'Playfair Display', Georgia, serif;
   --font-body: 'DM Sans', system-ui, sans-serif;
-
-  /* ── Extra variables used by Home.js & newer components ── */
-  --ink:        #1A1F2E;
-  --ink2:       #1E2638;
-  --sapphire:   #1B3A6B;
-  --sapphire2:  #2a4f8f;
-  --sky:        #3B72F5;
-  --sky2:       #5E8DF7;
-  --amber:      #F5A623;
-  --amber2:     #E09C1A;
-  --emerald:    #0B7A5E;
-  --emerald2:   #0B7A5E;
-  --ice:        #F7F9FC;
-  --lavender:   #EEF2FF;
-  --shadow-xs:  0 1px 3px rgba(0,0,0,0.06);
-  --shadow-lg:  0 12px 40px rgba(0,0,0,0.15);
-  --nav-h:      68px;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
@@ -213,3 +196,14 @@ tr:hover td { background: rgba(212,168,83,0.04); }
   color: #ffffff !important;
 }
 .admin-page .form-group { margin-bottom: 0; }
+
+/* ── MODAL FORM LABEL FIX ── */
+/* form-label is dark by default but modal-box is dark navy — make labels white */
+.modal-box .form-label,
+.modal-box label {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+.modal-box select option {
+  background: #112240;
+  color: #ffffff;
+}
