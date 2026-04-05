@@ -21,7 +21,9 @@ api.interceptors.response.use(
     if (err.response?.status === 401) {
       localStorage.removeItem('teachs_token');
       localStorage.removeItem('teachs_user');
-      if (!window.location.pathname.startsWith('/login')) {
+      // Don't redirect if user filled guest lead form — they don't need a full account
+      const isGuest = !!localStorage.getItem('teachs_guest');
+      if (!isGuest && !window.location.pathname.startsWith('/login')) {
         window.location.href = '/login';
       }
     }

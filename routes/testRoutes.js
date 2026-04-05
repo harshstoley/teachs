@@ -1,7 +1,19 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
+const jwt = require('jsonwebtoken');
 const { authenticate, adminOnly } = require('../middleware/auth');
+
+// ── Helper: try to get user from token, return null if no token/invalid ──
+function getOptionalUser(req) {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) return null;
+    return jwt.verify(token, process.env.JWT_SECRET);
+  } catch (e) {
+    return null;
+  }
+}
 
 // GET /api/tests - List tests (public)
 router.get('/', async (req, res) => {
@@ -14,6 +26,7 @@ router.get('/', async (req, res) => {
     if (chapter) { where += ' AND chapter LIKE ?'; params.push(`%${chapter}%`); }
     if (is_published !== undefined) { where += ' AND is_published = ?'; params.push(is_published === 'true' ? 1 : 0); }
     else { where += ' AND is_published = 1'; }
+
     const [tests] = await db.query(
       `SELECT id, title, class_no, subject, chapter, duration_min, total_marks, question_count, created_at
        FROM tests ${where} ORDER BY class_no ASC, subject ASC, created_at DESC`,
@@ -25,21 +38,27 @@ router.get('/', async (req, res) => {
   }
 });
 
-// GET /api/tests/:id - Get test with questions (auth required for full details)
-router.get('/:id', authenticate, async (req, res) => {
+// GET /api/tests/:id - Get test with questions
+// PUBLIC — guests who filled lead form can access
+router.get('/:id', async (req, res) => {
   try {
+    const user = getOptionalUser(req);
+
     const [tests] = await db.query('SELECT * FROM tests WHERE id = ?', [req.params.id]);
     if (!tests.length) return res.status(404).json({ error: 'Test not found' });
     const test = tests[0];
 
     const [questions] = await db.query(
       `SELECT id, question_text, option_a, option_b, option_c, option_d, marks, difficulty
-       FROM questions WHERE test_id = ? ORDER BY sort_order ASC`, [req.params.id]
+       FROM questions WHERE test_id = ? ORDER BY sort_order ASC`,
+      [req.params.id]
     );
-    // Don't send answers unless admin or teacher
-    if (!['admin', 'teacher'].includes(req.user.role)) {
+
+    // Only admins/teachers see answers in the question list
+    if (!user || !['admin', 'teacher'].includes(user.role)) {
       questions.forEach(q => { delete q.correct_answer; delete q.solution; });
     }
+
     res.json({ ...test, questions });
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch test' });
@@ -47,14 +66,18 @@ router.get('/:id', authenticate, async (req, res) => {
 });
 
 // POST /api/tests/:id/submit - Submit test answers
-router.post('/:id/submit', authenticate, async (req, res) => {
+// PUBLIC — guests get score back, logged-in users also get result saved to DB
+router.post('/:id/submit', async (req, res) => {
   try {
-    const { answers } = req.body; // { question_id: selected_option, ... }
+    const user = getOptionalUser(req);
+    const { answers } = req.body;
     if (!answers) return res.status(400).json({ error: 'Answers required' });
 
     const [questions] = await db.query(
-      'SELECT id, correct_answer, marks FROM questions WHERE test_id = ?', [req.params.id]
+      'SELECT id, correct_answer, marks FROM questions WHERE test_id = ?',
+      [req.params.id]
     );
+
     let score = 0;
     let total = 0;
     const results = questions.map(q => {
@@ -65,21 +88,35 @@ router.post('/:id/submit', authenticate, async (req, res) => {
     });
 
     const [test] = await db.query('SELECT total_marks FROM tests WHERE id = ?', [req.params.id]);
-    await db.query(
-      'INSERT INTO test_results (student_id, test_id, score, total, answers_json) VALUES (?, ?, ?, ?, ?)',
-      [req.user.id, req.params.id, score, test[0]?.total_marks || total, JSON.stringify(results)]
-    );
-    res.json({ score, total: test[0]?.total_marks || total, percentage: Math.round((score / total) * 100), results });
+    const totalMarks = test[0]?.total_marks || total;
+
+    // Only save to DB if logged-in student
+    if (user && user.id) {
+      await db.query(
+        'INSERT INTO test_results (student_id, test_id, score, total, answers_json) VALUES (?, ?, ?, ?, ?)',
+        [user.id, req.params.id, score, totalMarks, JSON.stringify(results)]
+      );
+    }
+
+    res.json({
+      score,
+      total: totalMarks,
+      percentage: Math.round((score / total) * 100),
+      results,
+    });
   } catch (err) {
     res.status(500).json({ error: 'Failed to submit test' });
   }
 });
 
-// GET /api/tests/:id/solutions - Get solutions (auth required)
-router.get('/:id/solutions', authenticate, async (req, res) => {
+// GET /api/tests/:id/solutions - Get solutions after test
+// PUBLIC — shown after submission, no auth needed
+router.get('/:id/solutions', async (req, res) => {
   try {
     const [questions] = await db.query(
-      'SELECT id, question_text, option_a, option_b, option_c, option_d, correct_answer, solution, marks FROM questions WHERE test_id = ? ORDER BY sort_order ASC',
+      `SELECT id, question_text, option_a, option_b, option_c, option_d,
+              correct_answer, solution, marks
+       FROM questions WHERE test_id = ? ORDER BY sort_order ASC`,
       [req.params.id]
     );
     res.json(questions);
@@ -88,7 +125,8 @@ router.get('/:id/solutions', authenticate, async (req, res) => {
   }
 });
 
-// ---- ADMIN TEST MANAGEMENT ----
+// ── ADMIN TEST MANAGEMENT ──
+
 // POST /api/tests - Create test
 router.post('/', ...adminOnly, async (req, res) => {
   try {
@@ -141,8 +179,10 @@ router.post('/:id/questions', ...adminOnly, async (req, res) => {
       [req.params.id, question_text, option_a || '', option_b || '', option_c || '', option_d || '',
        correct_answer, solution || '', marks || 1, difficulty || 'medium', sort_order || 99]
     );
-    // Update question count
-    await db.query('UPDATE tests SET question_count = (SELECT COUNT(*) FROM questions WHERE test_id = ?) WHERE id = ?', [req.params.id, req.params.id]);
+    await db.query(
+      'UPDATE tests SET question_count = (SELECT COUNT(*) FROM questions WHERE test_id = ?) WHERE id = ?',
+      [req.params.id, req.params.id]
+    );
     res.status(201).json({ message: 'Question added' });
   } catch (err) {
     res.status(500).json({ error: 'Failed to add question' });
@@ -155,7 +195,10 @@ router.delete('/questions/:qid', ...adminOnly, async (req, res) => {
     const [q] = await db.query('SELECT test_id FROM questions WHERE id = ?', [req.params.qid]);
     await db.query('DELETE FROM questions WHERE id = ?', [req.params.qid]);
     if (q.length) {
-      await db.query('UPDATE tests SET question_count = (SELECT COUNT(*) FROM questions WHERE test_id = ?) WHERE id = ?', [q[0].test_id, q[0].test_id]);
+      await db.query(
+        'UPDATE tests SET question_count = (SELECT COUNT(*) FROM questions WHERE test_id = ?) WHERE id = ?',
+        [q[0].test_id, q[0].test_id]
+      );
     }
     res.json({ message: 'Question deleted' });
   } catch (err) {
