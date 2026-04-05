@@ -27,16 +27,16 @@ export default function LeadForm({ title = 'Book Your Free Demo Class', compact 
   if (success) return (
     <div style={{ textAlign: 'center', padding: '40px 20px' }}>
       <div style={{ fontSize: '3rem', marginBottom: 16 }}>🎉</div>
-      <h3 style={{ color: 'var(--gold)', marginBottom: 12 }}>Demo Booked!</h3>
-      <p style={{ color: 'var(--text2)', maxWidth: 360, margin: '0 auto 24px' }}>{success}</p>
+      <h3 style={{ color: '#d4a853', marginBottom: 12 }}>Demo Booked!</h3>
+      <p style={{ color: '#b8c5d9', maxWidth: 360, margin: '0 auto 24px' }}>{success}</p>
       <button className="btn btn-outline" onClick={() => setSuccess('')}>Book Another</button>
     </div>
   );
 
   return (
     <form onSubmit={submit}>
-      <h3 style={{ fontFamily: 'var(--font-display)', fontSize: compact ? '1.3rem' : '1.6rem', color: 'var(--text)', marginBottom: 8 }}>{title}</h3>
-      <p style={{ color: 'var(--slate2)', fontSize: '0.9rem', marginBottom: 24 }}>Free. No registration fee. No commitment.</p>
+      <h3 style={{ fontFamily: 'var(--font-display)', fontSize: compact ? '1.3rem' : '1.6rem', color: '#ffffff', marginBottom: 8 }}>{title}</h3>
+      <p style={{ color: '#8a9bbd', fontSize: '0.9rem', marginBottom: 24 }}>Free. No registration fee. No commitment.</p>
 
       {error && <div className="alert alert-error">{error}</div>}
 
@@ -79,7 +79,7 @@ export default function LeadForm({ title = 'Book Your Free Demo Class', compact 
       <button type="submit" className="btn btn-primary btn-lg" disabled={loading} style={{ width: '100%', marginTop: 8 }}>
         {loading ? 'Submitting...' : '🎯 Book My Free Demo Class'}
       </button>
-      <p style={{ textAlign: 'center', fontSize: '0.8rem', color: 'var(--slate2)', marginTop: 12 }}>
+      <p style={{ textAlign: 'center', fontSize: '0.8rem', color: '#8a9bbd', marginTop: 12 }}>
         ✅ No fees &nbsp;·&nbsp; ✅ No commitment &nbsp;·&nbsp; ✅ 7-day refund on paid plans
       </p>
     </form>
