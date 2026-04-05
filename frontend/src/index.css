@@ -157,6 +157,42 @@ tr:hover td { background: rgba(212,168,83,0.04); }
 .admin-input:focus { border-color: var(--gold) !important; }
 .admin-label { color: var(--slate2) !important; }
 
-/* Admin dark inputs & selects */
-.admin-inp { background: #152238 !important; color: white !important; }
-.admin-inp option { background: #152238; color: white; }
+/* ── ADMIN INPUT OVERRIDES ── */
+/* Override form-input in admin pages */
+.admin-page .form-input,
+.admin-page input,
+.admin-page textarea,
+.admin-page select {
+  background: #0f1e35 !important;
+  color: #ffffff !important;
+  border-color: rgba(212,168,83,0.25) !important;
+}
+.admin-page .form-input::placeholder,
+.admin-page input::placeholder,
+.admin-page textarea::placeholder {
+  color: #8a9bbd !important;
+}
+.admin-page .form-input:focus,
+.admin-page input:focus,
+.admin-page textarea:focus,
+.admin-page select:focus {
+  border-color: #d4a853 !important;
+  outline: none !important;
+}
+.admin-page select option {
+  background: #0f1e35;
+  color: #ffffff;
+}
+.admin-page .form-label,
+.admin-page label {
+  color: #b8c5d9 !important;
+}
+.admin-page .card {
+  background: #152238 !important;
+  border-color: rgba(212,168,83,0.12) !important;
+  color: #ffffff !important;
+}
+.admin-page h3, .admin-page h4 {
+  color: #ffffff !important;
+}
+.admin-page .form-group { margin-bottom: 0; }

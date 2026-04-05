@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import AdminLayout from '../../components/AdminLayout';
 import api from '../../utils/api';
 
-const inp = { width:'100%', padding:'11px 14px', background:'rgba(255,255,255,0.06)', border:'1px solid rgba(212,168,83,0.2)', borderRadius:10, color:'#fff', fontSize:'0.9rem', fontFamily:'var(--font-body)', outline:'none' };
+const inp = { width:'100%', padding:'10px 14px', background:'#0f1f35', border:'1px solid rgba(212,168,83,0.2)', borderRadius:10, color:'#ffffff', fontFamily:'var(--font-body)', fontSize:'0.9rem', outline:'none', boxSizing:'border-box' };
 
 export default function AdminAnnouncements() {
   const [items, setItems] = useState([]);
@@ -43,11 +43,11 @@ export default function AdminAnnouncements() {
           </div>
           <div>
             <label style={{ display:'block', fontSize:'0.8rem', color:'var(--slate2)', marginBottom:5, fontWeight:600 }}>Message *</label>
-            <textarea value={form.message} onChange={e=>setForm({...form,message:e.target.value})} rows={3} required className="admin-inp" style={{...inp, resize:'vertical'}}/>
+            <textarea value={form.message} onChange={e=>setForm({...form,message:e.target.value})} rows={3} required style={{...inp, resize:'vertical'}}/>
           </div>
           <div>
             <label style={{ display:'block', fontSize:'0.8rem', color:'var(--slate2)', marginBottom:5, fontWeight:600 }}>Target</label>
-            <select value={form.target_role} onChange={e=>setForm({...form,target_role:e.target.value})} style={inp} className="admin-inp">
+            <select value={form.target_role} onChange={e=>setForm({...form,target_role:e.target.value})} style={inp}>
               <option value="all">All Users</option>
               <option value="student">Students Only</option>
               <option value="teacher">Teachers Only</option>

@@ -37,9 +37,9 @@ export function AdminTests() {
   };
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--navy)' }}>
+    <div className="admin-page" style={{ display: 'flex', minHeight: '100vh', background: '#0C1628' }}>
       <AdminSidebar />
-      <main style={{ flex: 1, padding: '64px 16px 24px', background: 'var(--navy2)', minWidth: 0, overflowY: 'auto' }}>
+      <main style={{ flex: 1, padding: '64px 16px 24px', background: '#152238', minWidth: 0, overflowY: 'auto' }}>
         <h2 style={{ marginBottom: 24, color: 'var(--white)' }}>Manage Practice Tests</h2>
         {msg && <div className="alert alert-success">{msg}</div>}
 
@@ -68,7 +68,7 @@ export function AdminTests() {
 
             <div style={{ display: 'grid', gap: 8 }}>
               {tests.map(t => (
-                <div key={t.id} style={{ padding: '12px 16px', borderRadius: 10, border: `2px solid ${selected === t.id ? 'var(--teal)' : 'var(--border)'}`, background: 'white', cursor: 'pointer' }} onClick={() => { setSelected(t.id); loadQuestions(t.id); }}>
+                <div key={t.id} style={{ padding: '12px 16px', borderRadius: 10, border: `2px solid ${selected === t.id ? 'var(--teal)' : 'var(--border)'}`, background: '#152238', cursor: 'pointer' }} onClick={() => { setSelected(t.id); loadQuestions(t.id); }}>
                   <div style={{ fontWeight: 600, fontSize: '0.875rem', marginBottom: 4 }}>{t.title}</div>
                   <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                     <span className="badge badge-navy" style={{ fontSize: '0.65rem' }}>Cl {t.class_no}</span>
@@ -115,7 +115,7 @@ export function AdminTests() {
 
               <h4 style={{ marginBottom: 12 }}>Questions ({questions.length})</h4>
               {questions.map((q, i) => (
-                <div key={q.id} style={{ padding: '14px 18px', borderRadius: 10, border: '1px solid var(--border)', background: 'white', marginBottom: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
+                <div key={q.id} style={{ padding: '14px 18px', borderRadius: 10, border: '1px solid var(--border)', background: '#152238', marginBottom: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
                   <div style={{ flex: 1 }}>
                     <div style={{ fontWeight: 600, fontSize: '0.875rem', marginBottom: 6 }}>Q{i+1}. {q.question_text}</div>
                     <div style={{ display: 'flex', gap: 12, fontSize: '0.78rem', color: 'var(--ink-lighter)' }}>
@@ -161,9 +161,9 @@ export function AdminTestimonials() {
   const del = async (id) => { if (!window.confirm('Delete?')) return; await api.delete(`/admin/testimonials/${id}`); load(); };
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--navy)' }}>
+    <div className="admin-page" style={{ display: 'flex', minHeight: '100vh', background: '#0C1628' }}>
       <AdminSidebar />
-      <main style={{ flex: 1, padding: '64px 16px 24px', background: 'var(--navy2)', minWidth: 0, overflowY: 'auto' }}>
+      <main style={{ flex: 1, padding: '64px 16px 24px', background: '#152238', minWidth: 0, overflowY: 'auto' }}>
         <h2 style={{ marginBottom: 24, color: 'var(--white)' }}>Manage Testimonials</h2>
         {msg && <div className="alert alert-success">{msg}</div>}
         <div style={{ background: 'var(--navy2)', borderRadius: 16, padding: 24, border: '1px solid rgba(212,168,83,0.15)', marginBottom: 20 }}>
@@ -217,9 +217,9 @@ export function AdminWorkshop() {
   const del = async (id) => { if (!window.confirm('Delete?')) return; await api.delete(`/workshop/sessions/${id}`); load(); };
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--navy)' }}>
+    <div className="admin-page" style={{ display: 'flex', minHeight: '100vh', background: '#0C1628' }}>
       <AdminSidebar />
-      <main style={{ flex: 1, padding: '64px 16px 24px', background: 'var(--navy2)', minWidth: 0, overflowY: 'auto' }}>
+      <main style={{ flex: 1, padding: '64px 16px 24px', background: '#152238', minWidth: 0, overflowY: 'auto' }}>
         <h2 style={{ marginBottom: 24, color: 'var(--white)' }}>Manage Workshop Sessions</h2>
         {msg && <div className="alert alert-success">{msg}</div>}
         <div style={{ background: 'var(--navy2)', borderRadius: 16, padding: 24, border: '1px solid rgba(212,168,83,0.15)', marginBottom: 20 }}>
@@ -265,9 +265,9 @@ export function AdminWomen() {
   const statusColor = s => ({ pending: 'badge-amber', reviewing: 'badge-teal', accepted: 'badge-success', rejected: 'badge-error' }[s] || 'badge-navy');
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--navy)' }}>
+    <div className="admin-page" style={{ display: 'flex', minHeight: '100vh', background: '#0C1628' }}>
       <AdminSidebar />
-      <main style={{ flex: 1, padding: '64px 16px 24px', background: 'var(--navy2)', minWidth: 0, overflowY: 'auto' }}>
+      <main style={{ flex: 1, padding: '64px 16px 24px', background: '#152238', minWidth: 0, overflowY: 'auto' }}>
         <h2 style={{ marginBottom: 24, color: 'var(--white)' }}>Women's Program Applications</h2>
         {msg && <div className="alert alert-success">{msg}</div>}
         <div className="table-wrap">
@@ -320,9 +320,9 @@ export function AdminAssign() {
   };
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--navy)' }}>
+    <div className="admin-page" style={{ display: 'flex', minHeight: '100vh', background: '#0C1628' }}>
       <AdminSidebar />
-      <main style={{ flex: 1, padding: '64px 16px 24px', background: 'var(--navy2)', minWidth: 0, overflowY: 'auto' }}>
+      <main style={{ flex: 1, padding: '64px 16px 24px', background: '#152238', minWidth: 0, overflowY: 'auto' }}>
         <h2 style={{ marginBottom: 24, color: 'var(--white)' }}>Assign Teachers to Students</h2>
         {msg.text && <div className={`alert alert-${msg.type}`} style={{ marginBottom: 16 }}>{msg.text}</div>}
         <div style={{ background: 'var(--navy2)', borderRadius: 16, padding: 24, border: '1px solid rgba(212,168,83,0.15)', marginBottom: 20 }}>
@@ -379,9 +379,9 @@ export function AdminSchedule() {
   };
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--navy)' }}>
+    <div className="admin-page" style={{ display: 'flex', minHeight: '100vh', background: '#0C1628' }}>
       <AdminSidebar />
-      <main style={{ flex: 1, padding: '64px 16px 24px', background: 'var(--navy2)', minWidth: 0, overflowY: 'auto' }}>
+      <main style={{ flex: 1, padding: '64px 16px 24px', background: '#152238', minWidth: 0, overflowY: 'auto' }}>
         <h2 style={{ marginBottom: 24, color: 'var(--white)' }}>Schedule Classes</h2>
         {msg.text && <div className={`alert alert-${msg.type}`} style={{ marginBottom: 16 }}>{msg.text}</div>}
         <div style={{ background: 'var(--navy2)', borderRadius: 16, padding: 24, border: '1px solid rgba(212,168,83,0.15)', marginBottom: 20 }}>
@@ -432,9 +432,9 @@ export function AdminAnnouncements() {
   };
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--navy)' }}>
+    <div className="admin-page" style={{ display: 'flex', minHeight: '100vh', background: '#0C1628' }}>
       <AdminSidebar />
-      <main style={{ flex: 1, padding: '64px 16px 24px', background: 'var(--navy2)', minWidth: 0, overflowY: 'auto' }}>
+      <main style={{ flex: 1, padding: '64px 16px 24px', background: '#152238', minWidth: 0, overflowY: 'auto' }}>
         <h2 style={{ marginBottom: 24, color: 'var(--white)' }}>Announcements</h2>
         {msg && <div className="alert alert-success">{msg}</div>}
         <div style={{ background: 'var(--navy2)', borderRadius: 16, padding: 24, border: '1px solid rgba(212,168,83,0.15)', marginBottom: 20 }}>
@@ -455,7 +455,7 @@ export function AdminAnnouncements() {
 
         <div style={{ display: 'grid', gap: 12 }}>
           {items.map(a => (
-            <div key={a.id} style={{ padding: '14px 20px', borderRadius: 10, border: '1px solid var(--border)', background: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16 }}>
+            <div key={a.id} style={{ padding: '14px 20px', borderRadius: 10, border: '1px solid var(--border)', background: '#152238', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16 }}>
               <div>
                 <div style={{ fontWeight: 700, fontSize: '0.9rem', marginBottom: 4 }}>{a.title}</div>
                 <p style={{ fontSize: '0.875rem', margin: 0 }}>{a.message}</p>

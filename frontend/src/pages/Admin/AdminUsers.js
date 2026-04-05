@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import AdminLayout from '../../components/AdminLayout';
 import api from '../../utils/api';
 
-const inp = { width:'100%', padding:'10px 14px', background:'rgba(255,255,255,0.06)', border:'1px solid rgba(212,168,83,0.2)', borderRadius:10, color:'#fff', fontSize:'0.88rem', fontFamily:'var(--font-body)', outline:'none' };
+const inp = { width:'100%', padding:'10px 14px', background:'#0f1f35', border:'1px solid rgba(212,168,83,0.2)', borderRadius:10, color:'#ffffff', fontFamily:'var(--font-body)', fontSize:'0.9rem', outline:'none', boxSizing:'border-box' };
 const cardDark = { background:'#152238', border:'1px solid rgba(212,168,83,0.15)', borderRadius:14 };
 
 export default function AdminUsers() {
@@ -47,7 +47,7 @@ export default function AdminUsers() {
       </div>
 
       <div style={{display:'flex',gap:10,marginBottom:20}}>
-        <input value={search} onChange={e=>setSearch(e.target.value)} onKeyDown={e=>e.key==='Enter'&&load()} placeholder="Search name/email..." className="admin-inp" style={{...inp,maxWidth:280}}/>
+        <input value={search} onChange={e=>setSearch(e.target.value)} onKeyDown={e=>e.key==='Enter'&&load()} placeholder="Search name/email..." style={{...inp,maxWidth:280}}/>
         <button onClick={load} style={{padding:'10px 18px',background:'rgba(212,168,83,0.15)',color:'var(--gold)',border:'1px solid rgba(212,168,83,0.2)',borderRadius:10,cursor:'pointer',fontWeight:600,fontFamily:'var(--font-body)'}}>Search</button>
       </div>
 

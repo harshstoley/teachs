@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import AdminLayout from '../../components/AdminLayout';
 import api from '../../utils/api';
 
-const inp = {width:'100%',padding:'11px 14px',background:'rgba(255,255,255,0.06)',border:'1px solid rgba(212,168,83,0.2)',borderRadius:10,color:'#fff',fontSize:'0.9rem',fontFamily:'var(--font-body)',outline:'none'};
+const inp = { width:'100%', padding:'10px 14px', background:'#0f1f35', border:'1px solid rgba(212,168,83,0.2)', borderRadius:10, color:'#ffffff', fontFamily:'var(--font-body)', fontSize:'0.9rem', outline:'none', boxSizing:'border-box' };
 
 export default function AdminAssign() {
   const [students, setStudents] = useState([]);
@@ -63,7 +63,7 @@ export default function AdminAssign() {
           </div>
           <div>
             <label style={{display:'block',fontSize:'0.8rem',color:'var(--slate2)',marginBottom:5,fontWeight:600}}>Notes</label>
-            <textarea value={form.notes} onChange={e=>setForm({...form,notes:e.target.value})} rows={2} className="admin-inp" style={{...inp,resize:'vertical'}}/>
+            <textarea value={form.notes} onChange={e=>setForm({...form,notes:e.target.value})} rows={2} style={{...inp,resize:'vertical'}}/>
           </div>
           <button type="submit" style={{padding:'13px',background:'var(--gold)',color:'var(--navy)',border:'none',borderRadius:10,fontWeight:700,cursor:'pointer',fontSize:'0.95rem',fontFamily:'var(--font-body)'}}>
             Assign Teacher

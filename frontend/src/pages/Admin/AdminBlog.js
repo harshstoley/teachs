@@ -41,8 +41,8 @@ export default function AdminBlog() {
   const del = async (id) => { if (!window.confirm('Delete this post?')) return; await api.delete(`/blog/${id}`); load(); };
 
   const row = { borderBottom:'1px solid rgba(212,168,83,0.08)', padding:'14px 0', display:'grid', gridTemplateColumns:'1fr auto auto auto auto', gap:16, alignItems:'center' };
-  const inp = { width:'100%', padding:'10px 14px', background:'rgba(255,255,255,0.05)', border:'1px solid rgba(212,168,83,0.2)', borderRadius:10, color:'white', fontFamily:'var(--font-body)', fontSize:'0.9rem', outline:'none', boxSizing:'border-box' };
-  const lbl = { display:'block', fontSize:'0.78rem', color:'var(--slate2)', marginBottom:5, fontWeight:600 };
+  const inp = { width:'100%', padding:'10px 14px', background:'#0f1f35', border:'1px solid rgba(212,168,83,0.2)', borderRadius:10, color:'#ffffff', fontFamily:'var(--font-body)', fontSize:'0.9rem', outline:'none', boxSizing:'border-box' };
+  const lbl = { display:'block', fontSize:'0.78rem', color:'#b8c5d9', marginBottom:5, fontWeight:600 };
 
   return (
     <AdminLayout>
@@ -64,15 +64,15 @@ export default function AdminBlog() {
               <div><label style={lbl}>Title *</label><input value={form.title} onChange={e=>set('title',e.target.value)} required style={inp} placeholder="Article title"/></div>
               <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
                 <div><label style={lbl}>Category</label>
-                  <select value={form.category} onChange={e=>set('category',e.target.value)} className="admin-inp" style={{...inp, background:'#152238', color:'white'}}>
+                  <select value={form.category} onChange={e=>set('category',e.target.value)} style={{...inp, background:'#152238', color:'white'}}>
                     {['','Study Tips','Parenting','Board Exams','Learning','News'].map(c=><option key={c} value={c}>{c||'Select...'}</option>)}
                   </select>
                 </div>
                 <div><label style={lbl}>Author</label><input value={form.author} onChange={e=>set('author',e.target.value)} style={inp}/></div>
               </div>
               <div><label style={lbl}>Tags (comma separated)</label><input value={form.tags} onChange={e=>set('tags',e.target.value)} style={inp} placeholder="study tips, class 10, maths"/></div>
-              <div><label style={lbl}>Excerpt (short description)</label><textarea value={form.excerpt} onChange={e=>set('excerpt',e.target.value)} rows={2} className="admin-inp" style={{...inp,resize:'vertical'}} placeholder="Brief description shown in listing..."/></div>
-              <div><label style={lbl}>Content (HTML supported)</label><textarea value={form.content} onChange={e=>set('content',e.target.value)} rows={8} className="admin-inp" style={{...inp,resize:'vertical',fontFamily:'monospace',fontSize:'0.85rem'}} placeholder="Full article content..."/></div>
+              <div><label style={lbl}>Excerpt (short description)</label><textarea value={form.excerpt} onChange={e=>set('excerpt',e.target.value)} rows={2} style={{...inp,resize:'vertical'}} placeholder="Brief description shown in listing..."/></div>
+              <div><label style={lbl}>Content (HTML supported)</label><textarea value={form.content} onChange={e=>set('content',e.target.value)} rows={8} style={{...inp,resize:'vertical',fontFamily:'monospace',fontSize:'0.85rem'}} placeholder="Full article content..."/></div>
               <div>
                 <label style={lbl}>Cover Image</label>
                 <input type="file" accept="image/*" ref={fileRef} onChange={e=>setImageFile(e.target.files[0])} style={{ display:'none' }}/>

@@ -33,8 +33,8 @@ export default function AdminPricing() {
     setForm({...p, features: feats.join('\n')});
   };
 
-  const inp = { width:'100%', padding:'10px 14px', background:'#152238', border:'1px solid rgba(212,168,83,0.2)', borderRadius:10, color:'white', fontFamily:'var(--font-body)', fontSize:'0.9rem', outline:'none', boxSizing:'border-box' };
-  const lbl = { display:'block', fontSize:'0.78rem', color:'var(--slate2)', marginBottom:5, fontWeight:600 };
+  const inp = { width:'100%', padding:'10px 14px', background:'#0f1f35', border:'1px solid rgba(212,168,83,0.2)', borderRadius:10, color:'#ffffff', fontFamily:'var(--font-body)', fontSize:'0.9rem', outline:'none', boxSizing:'border-box' };
+  const lbl = { display:'block', fontSize:'0.78rem', color:'#b8c5d9', marginBottom:5, fontWeight:600 };
 
   return (
     <AdminLayout>
@@ -48,7 +48,7 @@ export default function AdminPricing() {
           <div><label style={lbl}>Title *</label><input value={form.title} onChange={e=>set('title',e.target.value)} required style={inp} placeholder="e.g. Junior Scholar"/></div>
           <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))',gap:12}}>
             <div><label style={lbl}>Type</label>
-              <select value={form.plan_type} onChange={e=>set('plan_type',e.target.value)} style={inp} className="admin-inp">
+              <select value={form.plan_type} onChange={e=>set('plan_type',e.target.value)} style={inp}>
                 {['individual','demo','group','board'].map(t=><option key={t} value={t}>{t}</option>)}
               </select>
             </div>
