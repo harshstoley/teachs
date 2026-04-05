@@ -43,11 +43,11 @@ export default function AdminAnnouncements() {
           </div>
           <div>
             <label style={{ display:'block', fontSize:'0.8rem', color:'var(--slate2)', marginBottom:5, fontWeight:600 }}>Message *</label>
-            <textarea value={form.message} onChange={e=>setForm({...form,message:e.target.value})} rows={3} required style={{...inp, resize:'vertical'}}/>
+            <textarea value={form.message} onChange={e=>setForm({...form,message:e.target.value})} rows={3} required className="admin-inp" style={{...inp, resize:'vertical'}}/>
           </div>
           <div>
             <label style={{ display:'block', fontSize:'0.8rem', color:'var(--slate2)', marginBottom:5, fontWeight:600 }}>Target</label>
-            <select value={form.target_role} onChange={e=>setForm({...form,target_role:e.target.value})} style={inp}>
+            <select value={form.target_role} onChange={e=>setForm({...form,target_role:e.target.value})} style={inp} className="admin-inp">
               <option value="all">All Users</option>
               <option value="student">Students Only</option>
               <option value="teacher">Teachers Only</option>

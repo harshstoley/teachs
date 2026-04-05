@@ -1,277 +1,103 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import AdminSidebar from '../../components/AdminSidebar';
+import React, { useState, useEffect } from 'react';
+import AdminLayout from '../../components/AdminLayout';
 import api from '../../utils/api';
 
-// ─────────────────────────────────────────
-// ADMIN PRICING
-// ─────────────────────────────────────────
-export function AdminPricing() {
+export default function AdminPricing() {
   const [plans, setPlans] = useState([]);
+  const [form, setForm] = useState({ title:'', plan_type:'individual', class_range:'', label:'', regular_price:'', discounted_price:'', features:'2 Subjects\nWeekly Tests\nProgress Reports', is_recommended:false, sort_order:99 });
   const [editing, setEditing] = useState(null);
-  const [form, setForm] = useState({ title: '', plan_type: 'individual', class_range: '', label: '', regular_price: '', discounted_price: '', features: '', is_recommended: false, is_active: true, sort_order: 99 });
   const [msg, setMsg] = useState('');
-  const showMsg = m => { setMsg(m); setTimeout(() => setMsg(''), 3000); };
+  const [loading, setLoading] = useState(true);
 
-  const load = () => api.get('/pricing/all').then(r => setPlans(r.data)).catch(() => {});
-  useEffect(() => { document.title = 'Pricing | Admin'; load(); }, []);
+  const load = () => { setLoading(true); api.get('/pricing').then(r=>setPlans(r.data)).catch(()=>{}).finally(()=>setLoading(false)); };
+  useEffect(load,[]);
 
-  const startEdit = (p) => {
-    const features = typeof p.features === 'string' ? JSON.parse(p.features) : p.features || [];
-    setEditing(p.id);
-    setForm({ ...p, features: features.join('\n'), is_recommended: !!p.is_recommended, is_active: !!p.is_active });
-  };
-  const resetForm = () => { setEditing(null); setForm({ title: '', plan_type: 'individual', class_range: '', label: '', regular_price: '', discounted_price: '', features: '', is_recommended: false, is_active: true, sort_order: 99 }); };
+  const set = (k,v) => setForm(f=>({...f,[k]:v}));
 
   const save = async e => {
     e.preventDefault();
-    const payload = { ...form, features: form.features.split('\n').filter(f => f.trim()), is_recommended: form.is_recommended ? 1 : 0 };
     try {
-      if (editing) { await api.put(`/pricing/${editing}`, payload); showMsg('Plan updated!'); }
-      else { await api.post('/pricing', payload); showMsg('Plan created!'); }
-      resetForm(); load();
-    } catch (err) { showMsg('Failed: ' + (err.response?.data?.error || 'error')); }
+      const payload = {...form, features: JSON.stringify(form.features.split('\n').filter(Boolean)) };
+      if(editing) { await api.put(`/pricing/${editing.id}`, payload); setMsg('Updated!'); }
+      else { await api.post('/pricing', payload); setMsg('Created!'); }
+      setEditing(null);
+      setForm({title:'',plan_type:'individual',class_range:'',label:'',regular_price:'',discounted_price:'',features:'2 Subjects\nWeekly Tests\nProgress Reports',is_recommended:false,sort_order:99});
+      load();
+    } catch(e) { setMsg(e.response?.data?.error||'Error'); }
   };
 
-  const del = async (id) => {
-    if (!window.confirm('Delete this plan?')) return;
-    await api.delete(`/pricing/${id}`); load(); showMsg('Deleted.');
+  const del = async id => { if(!window.confirm('Delete?')) return; await api.delete(`/pricing/${id}`); load(); };
+  const edit = p => {
+    setEditing(p);
+    const feats = typeof p.features==='string' ? JSON.parse(p.features||'[]') : p.features||[];
+    setForm({...p, features: feats.join('\n')});
   };
+
+  const inp = { width:'100%', padding:'10px 14px', background:'#152238', border:'1px solid rgba(212,168,83,0.2)', borderRadius:10, color:'white', fontFamily:'var(--font-body)', fontSize:'0.9rem', outline:'none', boxSizing:'border-box' };
+  const lbl = { display:'block', fontSize:'0.78rem', color:'var(--slate2)', marginBottom:5, fontWeight:600 };
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--navy)' }}>
-      <AdminSidebar />
-      <main style={{ flex: 1, padding: '64px 16px 24px', background: 'var(--navy2)', minWidth: 0, overflowY: 'auto' }}>
-        <h2 style={{ marginBottom: 24, color: 'var(--white)' }}>Manage Pricing Plans</h2>
-        {msg && <div className="alert alert-success">{msg}</div>}
+    <AdminLayout>
+      <h2 style={{color:'white',marginBottom:24}}>Manage Pricing Plans</h2>
+      {msg && <div style={{background:'rgba(42,138,94,0.15)',border:'1px solid rgba(42,138,94,0.3)',borderRadius:10,padding:'10px 16px',marginBottom:16,color:'#5BC8A0',fontSize:'0.875rem'}}>{msg}</div>}
 
-        <div style={{ background: 'var(--navy2)', borderRadius: 16, padding: 24, border: '1px solid rgba(212,168,83,0.15)', marginBottom: 20 , padding: 28, marginBottom: 28 }}>
-          <h3 style={{ marginBottom: 20 }}>{editing ? 'Edit Plan' : 'Add New Plan'}</h3>
-          <form onSubmit={save} style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
-            <div className="form-group" style={{ margin: 0, gridColumn: '1/-1' }}><label className="form-label">Title *</label><input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} className="form-input" required /></div>
-            <div className="form-group" style={{ margin: 0 }}><label className="form-label">Type</label><select value={form.plan_type} onChange={e => setForm({ ...form, plan_type: e.target.value })} className="form-input"><option value="demo">Demo</option><option value="individual">Individual</option><option value="group">Group</option><option value="music">Music</option><option value="board">Board (11-12)</option></select></div>
-            <div className="form-group" style={{ margin: 0 }}><label className="form-label">Class Range</label><input value={form.class_range} onChange={e => setForm({ ...form, class_range: e.target.value })} className="form-input" placeholder="e.g. Class 6–8" /></div>
-            <div className="form-group" style={{ margin: 0 }}><label className="form-label">Label/Badge</label><input value={form.label} onChange={e => setForm({ ...form, label: e.target.value })} className="form-input" placeholder="e.g. Most Popular" /></div>
-            <div className="form-group" style={{ margin: 0 }}><label className="form-label">Regular Price (₹)</label><input type="number" value={form.regular_price} onChange={e => setForm({ ...form, regular_price: e.target.value })} className="form-input" /></div>
-            <div className="form-group" style={{ margin: 0 }}><label className="form-label">Discounted Price (₹)</label><input type="number" value={form.discounted_price} onChange={e => setForm({ ...form, discounted_price: e.target.value })} className="form-input" /></div>
-            <div className="form-group" style={{ margin: 0 }}><label className="form-label">Sort Order</label><input type="number" value={form.sort_order} onChange={e => setForm({ ...form, sort_order: e.target.value })} className="form-input" /></div>
-            <div className="form-group" style={{ margin: 0, gridColumn: '1/-1' }}><label className="form-label">Features (one per line)</label><textarea value={form.features} onChange={e => setForm({ ...form, features: e.target.value })} className="form-input" rows={5} placeholder="2 Subjects&#10;Weekly Tests&#10;Progress Reports" /></div>
-            <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
-              <label style={{ display: 'flex', gap: 8, alignItems: 'center', fontSize: '0.9rem', cursor: 'pointer' }}><input type="checkbox" checked={form.is_recommended} onChange={e => setForm({ ...form, is_recommended: e.target.checked })} /> Recommended</label>
-              <label style={{ display: 'flex', gap: 8, alignItems: 'center', fontSize: '0.9rem', cursor: 'pointer' }}><input type="checkbox" checked={form.is_active} onChange={e => setForm({ ...form, is_active: e.target.checked })} /> Active</label>
+      {/* Form */}
+      <div style={{background:'var(--navy2)',borderRadius:16,padding:'24px 20px',border:'1px solid rgba(212,168,83,0.15)',marginBottom:28}}>
+        <h3 style={{color:'white',marginBottom:18,fontSize:'1rem'}}>{editing?'Edit Plan':'Add New Plan'}</h3>
+        <form onSubmit={save} style={{display:'grid',gap:14}}>
+          <div><label style={lbl}>Title *</label><input value={form.title} onChange={e=>set('title',e.target.value)} required style={inp} placeholder="e.g. Junior Scholar"/></div>
+          <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))',gap:12}}>
+            <div><label style={lbl}>Type</label>
+              <select value={form.plan_type} onChange={e=>set('plan_type',e.target.value)} style={inp} className="admin-inp">
+                {['individual','demo','group','board'].map(t=><option key={t} value={t}>{t}</option>)}
+              </select>
             </div>
-            <div style={{ display: 'flex', gap: 10 }}>
-              <button type="submit" className="btn btn-primary">{editing ? 'Update Plan' : 'Create Plan'}</button>
-              {editing && <button type="button" onClick={resetForm} className="btn btn-ghost">Cancel</button>}
-            </div>
-          </form>
-        </div>
-
-        <div className="table-wrap">
-          <table>
-            <thead><tr><th>Title</th><th>Type</th><th>Class</th><th>Regular</th><th>Discounted</th><th>Status</th><th>Actions</th></tr></thead>
-            <tbody>
-              {plans.map(p => (
-                <tr key={p.id}>
-                  <td><strong>{p.title}</strong>{p.is_recommended ? <span className="badge badge-amber" style={{ marginLeft: 8, fontSize: '0.65rem' }}>★ Pick</span> : null}</td>
-                  <td><span className="badge badge-navy">{p.plan_type}</span></td>
-                  <td>{p.class_range}</td>
-                  <td>{p.regular_price > 0 ? `₹${Number(p.regular_price).toLocaleString('en-IN')}` : 'Free'}</td>
-                  <td style={{ fontWeight: 700, color: 'var(--teal)' }}>{p.discounted_price > 0 ? `₹${Number(p.discounted_price).toLocaleString('en-IN')}` : '—'}</td>
-                  <td><span className={`badge ${p.is_active ? 'badge-success' : 'badge-error'}`}>{p.is_active ? 'Active' : 'Hidden'}</span></td>
-                  <td>
-                    <div style={{ display: 'flex', gap: 6 }}>
-                      <button onClick={() => startEdit(p)} className="btn btn-sm btn-outline">Edit</button>
-                      <button onClick={() => del(p.id)} className="btn btn-sm" style={{ background: 'rgba(229,62,62,0.1)', color: 'var(--error)', border: '1px solid rgba(229,62,62,0.2)' }}>Delete</button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </main>
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────
-// ADMIN LEADS
-// ─────────────────────────────────────────
-export function AdminLeads() {
-  const [leads, setLeads] = useState([]);
-  const [total, setTotal] = useState(0);
-  const [status, setStatus] = useState('');
-  const [msg, setMsg] = useState('');
-  const showMsg = m => { setMsg(m); setTimeout(() => setMsg(''), 3000); };
-
-  const load = useCallback(() => {
-    api.get(`/leads?status=${status}&limit=100`).then(r => { setLeads(r.data.leads); setTotal(r.data.total); }).catch(() => {});
-  }, [status]);
-  useEffect(() => { document.title = 'Leads | Admin'; load(); }, [load]);
-
-  const update = async (id, newStatus) => {
-    await api.put(`/leads/${id}`, { status: newStatus }); showMsg('Updated!'); load();
-  };
-  const del = async (id) => {
-    if (!window.confirm('Delete this lead?')) return;
-    await api.delete(`/leads/${id}`); load(); showMsg('Deleted.');
-  };
-
-  const statusColor = s => ({ new: 'badge-amber', contacted: 'badge-teal', converted: 'badge-success', closed: 'badge-error' }[s] || 'badge-navy');
-
-  return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--navy)' }}>
-      <AdminSidebar />
-      <main style={{ flex: 1, padding: '64px 16px 24px', background: 'var(--navy2)', minWidth: 0, overflowY: 'auto' }}>
-        <h2 style={{ marginBottom: 8 }}>Leads & Demo Requests</h2>
-        <p style={{ color: 'var(--ink-lighter)', marginBottom: 24 }}>{total} leads total</p>
-        {msg && <div className="alert alert-success">{msg}</div>}
-
-        <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
-          {['', 'new', 'contacted', 'converted', 'closed'].map(s => (
-            <button key={s} onClick={() => setStatus(s)} className={`btn btn-sm ${status === s ? 'btn-primary' : 'btn-ghost'}`}>{s || 'All'}</button>
-          ))}
-        </div>
-
-        <div className="table-wrap">
-          <table>
-            <thead><tr><th>Name</th><th>Phone</th><th>Class</th><th>Subject</th><th>Source</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
-            <tbody>
-              {leads.map(l => (
-                <tr key={l.id}>
-                  <td><strong>{l.name}</strong><div style={{ fontSize: '0.75rem', color: 'var(--ink-lighter)' }}>{l.email}</div></td>
-                  <td><a href={`tel:${l.phone}`} style={{ color: 'var(--teal)' }}>{l.phone}</a></td>
-                  <td>{l.student_class || '-'}</td>
-                  <td>{l.subject || '-'}</td>
-                  <td><span className="badge badge-navy" style={{ fontSize: '0.68rem' }}>{l.source}</span></td>
-                  <td><span className={`badge ${statusColor(l.status)}`}>{l.status}</span></td>
-                  <td style={{ fontSize: '0.8rem' }}>{new Date(l.created_at).toLocaleDateString('en-IN')}</td>
-                  <td>
-                    <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-                      {l.status === 'new' && <button onClick={() => update(l.id, 'contacted')} className="btn btn-sm btn-secondary">Mark Contacted</button>}
-                      {l.status === 'contacted' && <button onClick={() => update(l.id, 'converted')} className="btn btn-sm btn-primary">Convert</button>}
-                      <a href={`https://wa.me/${l.phone?.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" className="btn btn-sm" style={{ background: '#25D366', color: 'white' }}>WA</a>
-                      <button onClick={() => del(l.id)} className="btn btn-sm" style={{ background: 'rgba(229,62,62,0.1)', color: 'var(--error)', border: '1px solid rgba(229,62,62,0.2)' }}>Del</button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </main>
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────
-// ADMIN PAYMENTS
-// ─────────────────────────────────────────
-export function AdminPayments() {
-  const [payments, setPayments] = useState([]);
-  const [msg, setMsg] = useState({ text: '', type: '' });
-  const showMsg = (text, type = 'success') => { setMsg({ text, type }); setTimeout(() => setMsg({ text: '', type: '' }), 3000); };
-
-  useEffect(() => { document.title = 'Payments | Admin'; api.get('/payments/all').then(r => setPayments(r.data)).catch(() => {}); }, []);
-
-  const refund = async (paymentId) => {
-    const reason = prompt('Reason for refund:');
-    if (!reason) return;
-    try { await api.post('/payments/refund', { payment_id: paymentId, reason }); showMsg('Refund processed!'); } catch (err) { showMsg('Refund failed: ' + (err.response?.data?.error || 'error'), 'error'); }
-  };
-
-  const total = payments.filter(p => p.status === 'captured').reduce((s, p) => s + Number(p.amount), 0);
-
-  return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--navy)' }}>
-      <AdminSidebar />
-      <main style={{ flex: 1, padding: '64px 16px 24px', background: 'var(--navy2)', minWidth: 0, overflowY: 'auto' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
-          <div>
-            <h2 style={{ marginBottom: 4 }}>Payments</h2>
-            <p style={{ color: 'var(--ink-lighter)' }}>Total revenue: <strong style={{ color: 'var(--success)' }}>₹{total.toLocaleString('en-IN')}</strong></p>
+            <div><label style={lbl}>Class Range</label><input value={form.class_range} onChange={e=>set('class_range',e.target.value)} style={inp} placeholder="e.g. Class 6–8"/></div>
+            <div><label style={lbl}>Label/Badge</label><input value={form.label} onChange={e=>set('label',e.target.value)} style={inp} placeholder="e.g. Most Popular"/></div>
           </div>
-        </div>
-        {msg.text && <div className={`alert alert-${msg.type}`} style={{ marginBottom: 16 }}>{msg.text}</div>}
+          <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(140px,1fr))',gap:12}}>
+            <div><label style={lbl}>Regular Price (₹)</label><input type="number" value={form.regular_price} onChange={e=>set('regular_price',e.target.value)} style={inp} placeholder="2999"/></div>
+            <div><label style={lbl}>Discounted Price (₹)</label><input type="number" value={form.discounted_price} onChange={e=>set('discounted_price',e.target.value)} style={inp} placeholder="1999"/></div>
+            <div><label style={lbl}>Sort Order</label><input type="number" value={form.sort_order} onChange={e=>set('sort_order',e.target.value)} style={inp}/></div>
+          </div>
+          <div><label style={lbl}>Features (one per line)</label><textarea value={form.features} onChange={e=>set('features',e.target.value)} rows={5} style={{...inp,resize:'vertical'}}/></div>
+          <div style={{display:'flex',gap:20,alignItems:'center'}}>
+            <label style={{display:'flex',alignItems:'center',gap:8,cursor:'pointer'}}>
+              <input type="checkbox" checked={form.is_recommended} onChange={e=>set('is_recommended',e.target.checked)} style={{width:16,height:16,accentColor:'var(--gold)'}}/>
+              <span style={{color:'var(--slate2)',fontSize:'0.875rem'}}>Mark as Recommended</span>
+            </label>
+          </div>
+          <div style={{display:'flex',gap:10}}>
+            <button type="submit" style={{padding:'11px 24px',background:'var(--gold)',color:'var(--navy)',border:'none',borderRadius:10,fontWeight:700,cursor:'pointer',fontFamily:'var(--font-body)'}}>
+              {editing?'Update Plan':'Create Plan'}
+            </button>
+            {editing && <button type="button" onClick={()=>{setEditing(null);setForm({title:'',plan_type:'individual',class_range:'',label:'',regular_price:'',discounted_price:'',features:'2 Subjects\nWeekly Tests\nProgress Reports',is_recommended:false,sort_order:99});}} style={{padding:'11px 20px',background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:10,color:'var(--slate2)',cursor:'pointer',fontFamily:'var(--font-body)'}}>Cancel</button>}
+          </div>
+        </form>
+      </div>
 
-        <div className="table-wrap">
-          <table>
-            <thead><tr><th>User</th><th>Plan</th><th>Amount</th><th>Payment ID</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
-            <tbody>
-              {payments.map(p => (
-                <tr key={p.id}>
-                  <td><strong>{p.user_name}</strong><div style={{ fontSize: '0.75rem', color: 'var(--ink-lighter)' }}>{p.email}</div></td>
-                  <td>{p.plan_title || '-'}</td>
-                  <td style={{ fontWeight: 700 }}>₹{Number(p.amount).toLocaleString('en-IN')}</td>
-                  <td style={{ fontSize: '0.78rem', fontFamily: 'monospace' }}>{p.razorpay_payment_id}</td>
-                  <td><span className={`badge ${p.status === 'captured' ? 'badge-success' : p.status === 'refunded' ? 'badge-error' : 'badge-amber'}`}>{p.status}</span></td>
-                  <td style={{ fontSize: '0.82rem' }}>{new Date(p.created_at).toLocaleDateString('en-IN')}</td>
-                  <td>
-                    {p.status === 'captured' && <button onClick={() => refund(p.razorpay_payment_id)} className="btn btn-sm" style={{ background: 'rgba(229,62,62,0.1)', color: 'var(--error)', border: '1px solid rgba(229,62,62,0.2)' }}>Refund</button>}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </main>
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────
-// ADMIN SETTINGS
-// ─────────────────────────────────────────
-export function AdminSettings() {
-  const [settings, setSettings] = useState({});
-  const [msg, setMsg] = useState({ text: '', type: '' });
-  const showMsg = (text, type = 'success') => { setMsg({ text, type }); setTimeout(() => setMsg({ text: '', type: '' }), 3000); };
-
-  useEffect(() => {
-    document.title = 'Settings | Admin';
-    api.get('/settings/all').then(r => {
-      const s = {}; r.data.forEach(row => { s[row.setting_key] = row.setting_value; }); setSettings(s);
-    }).catch(() => {});
-  }, []);
-
-  const save = async e => {
-    e.preventDefault();
-    try { await api.put('/settings', settings); showMsg('Settings saved!'); } catch { showMsg('Failed.', 'error'); }
-  };
-
-  const fields = [
-    { key: 'site_name', label: 'Site Name' },
-    { key: 'tagline', label: 'Tagline' },
-    { key: 'phone', label: 'Phone Number' },
-    { key: 'email', label: 'Support Email' },
-    { key: 'whatsapp', label: 'WhatsApp Number (with country code, no +)' },
-    { key: 'address', label: 'Address' },
-    { key: 'instagram', label: 'Instagram URL' },
-    { key: 'twitter', label: 'Twitter/X URL' },
-    { key: 'facebook', label: 'Facebook URL' },
-    { key: 'youtube', label: 'YouTube URL' },
-  ];
-
-  return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--navy)' }}>
-      <AdminSidebar />
-      <main style={{ flex: 1, padding: '64px 16px 24px', background: 'var(--navy2)', minWidth: 0, overflowY: 'auto' }}>
-        <h2 style={{ marginBottom: 24, color: 'var(--white)' }}>Site Settings</h2>
-        {msg.text && <div className={`alert alert-${msg.type}`} style={{ marginBottom: 16 }}>{msg.text}</div>}
-        <div style={{ background: 'var(--navy2)', borderRadius: 16, padding: 24, border: '1px solid rgba(212,168,83,0.15)', marginBottom: 20 , maxWidth: 700 }}>
-          <form onSubmit={save}>
-            {fields.map(f => (
-              <div key={f.key} className="form-group">
-                <label className="form-label">{f.label}</label>
-                <input value={settings[f.key] || ''} onChange={e => setSettings({ ...settings, [f.key]: e.target.value })} className="form-input" />
+      {/* Plans list */}
+      {loading ? <div className="spinner" style={{margin:'40px auto',borderTopColor:'var(--gold)'}}/> :
+       plans.length===0 ? <p style={{color:'var(--slate2)'}}>No plans yet.</p> : (
+        <div style={{display:'grid',gap:12}}>
+          {plans.map(p => {
+            const feats = typeof p.features==='string' ? JSON.parse(p.features||'[]') : p.features||[];
+            return (
+              <div key={p.id} style={{background:'var(--navy2)',borderRadius:14,padding:'18px 20px',border:'1px solid rgba(212,168,83,0.1)',display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:12}}>
+                <div>
+                  <div style={{color:'white',fontWeight:700,fontSize:'0.95rem'}}>{p.title} {p.is_recommended && <span style={{background:'rgba(212,168,83,0.15)',color:'var(--gold)',padding:'2px 8px',borderRadius:100,fontSize:'0.68rem',marginLeft:6}}>★ Recommended</span>}</div>
+                  <div style={{color:'var(--teal)',fontSize:'0.78rem',marginTop:2}}>{p.plan_type} · {p.class_range}</div>
+                  <div style={{color:'var(--slate2)',fontSize:'0.78rem',marginTop:2}}>₹{p.discounted_price||0}/mo · {feats.length} features</div>
+                </div>
+                <div style={{display:'flex',gap:8}}>
+                  <button onClick={()=>edit(p)} style={{padding:'7px 14px',background:'rgba(212,168,83,0.1)',border:'none',borderRadius:8,color:'var(--gold)',cursor:'pointer',fontSize:'0.8rem',fontFamily:'var(--font-body)'}}>Edit</button>
+                  <button onClick={()=>del(p.id)} style={{padding:'7px 14px',background:'rgba(192,57,43,0.1)',border:'none',borderRadius:8,color:'#e74c3c',cursor:'pointer',fontSize:'0.8rem',fontFamily:'var(--font-body)'}}>Delete</button>
+                </div>
               </div>
-            ))}
-            <button type="submit" className="btn btn-primary">Save Settings</button>
-          </form>
+            );
+          })}
         </div>
-      </main>
-    </div>
+      )}
+    </AdminLayout>
   );
 }
-
-export default AdminPricing;

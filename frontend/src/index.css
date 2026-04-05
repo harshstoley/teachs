@@ -157,14 +157,6 @@ tr:hover td { background: rgba(212,168,83,0.04); }
 .admin-input:focus { border-color: var(--gold) !important; }
 .admin-label { color: var(--slate2) !important; }
 
-
-
-/* ── Admin panel select dropdowns ── */
-.admin-select, .admin-form select {
-  background-color: #1a2d4a;
-  color: white;
-}
-.admin-form select option {
-  background: #1a2d4a;
-  color: white;
-}
+/* Admin dark inputs & selects */
+.admin-inp { background: #152238 !important; color: white !important; }
+.admin-inp option { background: #152238; color: white; }

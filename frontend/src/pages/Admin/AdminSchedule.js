@@ -60,7 +60,7 @@ export default function AdminSchedule() {
           <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
             <div>
               <label style={lbl}>Day</label>
-              <select value={form.day_of_week} onChange={e=>setForm({...form,day_of_week:e.target.value})} style={inp}>
+              <select value={form.day_of_week} onChange={e=>setForm({...form,day_of_week:e.target.value})} style={inp} className="admin-inp">
                 {DAYS.map((d,i)=><option key={i+1} value={i+1}>{d}</option>)}
               </select>
             </div>

@@ -63,7 +63,7 @@ export default function AdminAssign() {
           </div>
           <div>
             <label style={{display:'block',fontSize:'0.8rem',color:'var(--slate2)',marginBottom:5,fontWeight:600}}>Notes</label>
-            <textarea value={form.notes} onChange={e=>setForm({...form,notes:e.target.value})} rows={2} style={{...inp,resize:'vertical'}}/>
+            <textarea value={form.notes} onChange={e=>setForm({...form,notes:e.target.value})} rows={2} className="admin-inp" style={{...inp,resize:'vertical'}}/>
           </div>
           <button type="submit" style={{padding:'13px',background:'var(--gold)',color:'var(--navy)',border:'none',borderRadius:10,fontWeight:700,cursor:'pointer',fontSize:'0.95rem',fontFamily:'var(--font-body)'}}>
             Assign Teacher

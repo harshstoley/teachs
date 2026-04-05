@@ -47,7 +47,7 @@ export default function AdminUsers() {
       </div>
 
       <div style={{display:'flex',gap:10,marginBottom:20}}>
-        <input value={search} onChange={e=>setSearch(e.target.value)} onKeyDown={e=>e.key==='Enter'&&load()} placeholder="Search name/email..." style={{...inp,maxWidth:280}}/>
+        <input value={search} onChange={e=>setSearch(e.target.value)} onKeyDown={e=>e.key==='Enter'&&load()} placeholder="Search name/email..." className="admin-inp" style={{...inp,maxWidth:280}}/>
         <button onClick={load} style={{padding:'10px 18px',background:'rgba(212,168,83,0.15)',color:'var(--gold)',border:'1px solid rgba(212,168,83,0.2)',borderRadius:10,cursor:'pointer',fontWeight:600,fontFamily:'var(--font-body)'}}>Search</button>
       </div>
 

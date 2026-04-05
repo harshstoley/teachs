@@ -65,22 +65,22 @@ export default function AdminMaterials() {
               <div><label style={lbl}>Title *</label><input value={form.title} onChange={e=>set('title',e.target.value)} required style={inp} placeholder="e.g. Class 10 Maths Chapter 1 Notes"/></div>
               <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:12 }}>
                 <div><label style={lbl}>Category</label>
-                  <select value={form.category} onChange={e=>set('category',e.target.value)} style={{...inp, background:'#152238', color:'white'}}>
+                  <select value={form.category} onChange={e=>set('category',e.target.value)} className="admin-inp" style={{...inp, background:'#152238', color:'white'}}>
                     {['','Notes','Question Papers','Worksheets','Syllabus','Sample Papers'].map(c=><option key={c} value={c}>{c||'Select...'}</option>)}
                   </select>
                 </div>
                 <div><label style={lbl}>Subject</label>
-                  <select value={form.subject} onChange={e=>set('subject',e.target.value)} style={{...inp, background:'#152238', color:'white'}}>
+                  <select value={form.subject} onChange={e=>set('subject',e.target.value)} className="admin-inp" style={{...inp, background:'#152238', color:'white'}}>
                     {['','Mathematics','Science','English','Social Studies','Hindi'].map(s=><option key={s} value={s}>{s||'Select...'}</option>)}
                   </select>
                 </div>
                 <div><label style={lbl}>Class</label>
-                  <select value={form.class_no} onChange={e=>set('class_no',e.target.value)} style={{...inp, background:'#152238', color:'white'}}>
+                  <select value={form.class_no} onChange={e=>set('class_no',e.target.value)} className="admin-inp" style={{...inp, background:'#152238', color:'white'}}>
                     {['','1','2','3','4','5','6','7','8','9','10'].map(c=><option key={c} value={c}>{c?`Class ${c}`:'Select...'}</option>)}
                   </select>
                 </div>
               </div>
-              <div><label style={lbl}>Description</label><textarea value={form.description} onChange={e=>set('description',e.target.value)} rows={3} style={{...inp,resize:'vertical'}} placeholder="Brief description of this material..."/></div>
+              <div><label style={lbl}>Description</label><textarea value={form.description} onChange={e=>set('description',e.target.value)} rows={3} className="admin-inp" style={{...inp,resize:'vertical'}} placeholder="Brief description of this material..."/></div>
               
               {/* File Upload */}
               <div>
