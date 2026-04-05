@@ -157,20 +157,14 @@ tr:hover td { background: rgba(212,168,83,0.04); }
 .admin-input:focus { border-color: var(--gold) !important; }
 .admin-label { color: var(--slate2) !important; }
 
-/* ── Mobile fixes ── */
-@media(max-width:600px){
-  .mobile-1col { grid-template-columns: 1fr !important; }
-  .container { padding: 0 16px !important; }
-  h1 { font-size: clamp(1.6rem,6vw,2rem) !important; }
-  h2 { font-size: clamp(1.3rem,5vw,1.8rem) !important; }
-}
 
-/* ── Fix select dropdown options across all pages ── */
-select option {
-  background: #1a2d4a;
+
+/* ── Admin panel select dropdowns ── */
+.admin-select, .admin-form select {
+  background-color: #1a2d4a;
   color: white;
 }
-select {
-  background-color: #1a2d4a !important;
-  color: white !important;
+.admin-form select option {
+  background: #1a2d4a;
+  color: white;
 }

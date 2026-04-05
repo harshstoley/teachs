@@ -64,7 +64,7 @@ export default function AdminBlog() {
               <div><label style={lbl}>Title *</label><input value={form.title} onChange={e=>set('title',e.target.value)} required style={inp} placeholder="Article title"/></div>
               <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
                 <div><label style={lbl}>Category</label>
-                  <select value={form.category} onChange={e=>set('category',e.target.value)} style={inp}>
+                  <select value={form.category} onChange={e=>set('category',e.target.value)} style={{...inp, background:'#152238', color:'white'}}>
                     {['','Study Tips','Parenting','Board Exams','Learning','News'].map(c=><option key={c} value={c}>{c||'Select...'}</option>)}
                   </select>
                 </div>
