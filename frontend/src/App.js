@@ -16,6 +16,11 @@ import Signup from './pages/Signup';
 import MentorWorkshop from './pages/MentorWorkshop';
 import WomensProgram from './pages/WomensProgram';
 import BecomeTutor from './pages/BecomeTutor';
+import Blog from './pages/Blog';
+import BlogPost from './pages/BlogPost';
+import Materials from './pages/Materials';
+import AdminBlog from './pages/Admin/AdminBlog';
+import AdminMaterials from './pages/Admin/AdminMaterials';
 
 import StudentDashboard from './pages/StudentDashboard';
 import TeacherDashboard from './pages/TeacherDashboard';
@@ -69,6 +74,11 @@ export default function App() {
             <Route path="/mentor-workshop" element={<MentorWorkshop />} />
             <Route path="/womens-program" element={<WomensProgram />} />
             <Route path="/become-tutor" element={<BecomeTutor />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/blog/:slug" element={<BlogPost />} />
+          <Route path="/materials" element={<Materials />} />
+          <Route path="/admin/blog" element={<AdminBlog />} />
+          <Route path="/admin/materials" element={<AdminMaterials />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/dashboard/student" element={<RequireAuth role="student"><StudentDashboard /></RequireAuth>} />

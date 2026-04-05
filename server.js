@@ -20,6 +20,8 @@ app.get('/sitemap.xml', (req, res) => {
 <url><loc>https://teachs.in/womens-program</loc><priority>0.7</priority></url>
 <url><loc>https://teachs.in/become-tutor</loc><priority>0.7</priority></url>
 <url><loc>https://teachs.in/signup</loc><priority>0.6</priority></url>
+<url><loc>https://teachs.in/blog</loc><priority>0.8</priority></url>
+<url><loc>https://teachs.in/materials</loc><priority>0.8</priority></url>
 </urlset>`);
 });
 
@@ -66,6 +68,8 @@ app.use('/api/payments', require('./routes/paymentRoutes'));
 app.use('/api/workshop', require('./routes/workshopRoutes'));
 app.use('/api/women', require('./routes/womenRoutes'));
 app.use('/api/settings', require('./routes/settingsRoutes'));
+app.use('/api/blog', require('./routes/blogRoutes'));
+app.use('/api/materials', require('./routes/materialRoutes'));
 
 // Health check
 app.get('/api/health', (req, res) => {

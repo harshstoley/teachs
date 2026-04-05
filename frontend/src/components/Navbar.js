@@ -25,6 +25,8 @@ export default function Navbar() {
   const links = [
     { to: '/', label: 'Home' },
     { to: '/pricing', label: 'Pricing' },
+    { to: '/blog', label: 'Blog' },
+    { to: '/materials', label: 'Materials' },
     { to: '/practice-tests', label: 'Tests' },
     { to: '/mentor-workshop', label: 'Workshop' },
     { to: '/womens-program', label: "Women's" },
