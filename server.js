@@ -28,6 +28,15 @@ app.get('/sitemap.xml', (req, res) => {
 // Security middleware
 app.use(helmet({ contentSecurityPolicy: false }));
 
+// Redirect www → non-www (fixes "Duplicate without canonical" in Google Search Console)
+app.use((req, res, next) => {
+  const host = req.headers.host || '';
+  if (host.startsWith('www.')) {
+    return res.redirect(301, 'https://teachs.in' + req.url);
+  }
+  next();
+});
+
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,

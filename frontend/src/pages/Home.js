@@ -266,7 +266,17 @@ export default function Home() {
       </section>
 
       {/* ── FAQ ── */}
-      <section style={{ background: 'var(--white)', padding: '88px 0' }} itemScope itemType="https://schema.org/FAQPage">
+      {/* JSON-LD: Google reads this regardless of accordion state — fixes "invalid item" error */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": FAQS.map(f => ({
+          "@type": "Question",
+          "name": f.q,
+          "acceptedAnswer": { "@type": "Answer", "text": f.a }
+        }))
+      })}} />
+      <section style={{ background: 'var(--white)', padding: '88px 0' }}>
         <div className="container">
           <div style={{ textAlign: 'center', marginBottom: 48 }}>
             <span className="section-tag">FAQ</span>
@@ -274,20 +284,20 @@ export default function Home() {
           </div>
           <div style={{ maxWidth: 700, margin: '0 auto' }}>
             {FAQS.map((faq, i) => (
-              <div key={i} itemScope itemProp="mainEntity" itemType="https://schema.org/Question"
+              <div key={i}
                 style={{ border: '1px solid var(--border)', borderRadius: 14, marginBottom: 10, background: 'var(--ice)', overflow: 'hidden', transition: 'all 0.2s', boxShadow: openFaq === i ? 'var(--shadow)' : 'var(--shadow-xs)' }}>
                 <button onClick={() => setOpenFaq(openFaq === i ? null : i)} style={{
                   width: '100%', padding: '18px 22px', display: 'flex', justifyContent: 'space-between',
                   alignItems: 'center', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', gap: 12,
                 }}>
-                  <span style={{ fontWeight: 600, color: 'var(--text)', fontSize: '0.92rem', fontFamily: 'var(--font-body)' }} itemProp="name">{faq.q}</span>
+                  <span style={{ fontWeight: 600, color: 'var(--text)', fontSize: '0.92rem', fontFamily: 'var(--font-body)' }}>{faq.q}</span>
                   <span style={{ width: 28, height: 28, borderRadius: '50%', background: openFaq === i ? 'var(--sapphire)' : 'var(--lavender)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: openFaq === i ? 'white' : 'var(--sapphire)', fontSize: '1.1rem', flexShrink: 0, transition: 'all 0.2s', fontWeight: 300 }}>
                     {openFaq === i ? '−' : '+'}
                   </span>
                 </button>
                 {openFaq === i && (
-                  <div itemScope itemProp="acceptedAnswer" itemType="https://schema.org/Answer" style={{ padding: '0 22px 18px' }}>
-                    <p style={{ fontSize: '0.875rem', color: 'var(--text2)', lineHeight: 1.74 }} itemProp="text">{faq.a}</p>
+                  <div style={{ padding: '0 22px 18px' }}>
+                    <p style={{ fontSize: '0.875rem', color: 'var(--text2)', lineHeight: 1.74 }}>{faq.a}</p>
                   </div>
                 )}
               </div>

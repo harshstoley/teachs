@@ -1,5 +1,6 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { HelmetProvider, Helmet } from 'react-helmet-async';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
 import Navbar from './components/Navbar';
@@ -61,11 +62,26 @@ function Layout({ children }) {
   );
 }
 
+// Auto-sets correct canonical URL for every public page — fixes "Duplicate without canonical"
+function CanonicalUpdater() {
+  const { pathname } = useLocation();
+  const isDashboard = pathname.startsWith('/dashboard') || pathname.startsWith('/admin');
+  if (isDashboard) return null;
+  const canonical = 'https://teachs.in' + pathname;
+  return (
+    <Helmet>
+      <link rel="canonical" href={canonical} />
+    </Helmet>
+  );
+}
+
 export default function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <Layout>
+    <HelmetProvider>
+      <AuthProvider>
+        <Router>
+          <CanonicalUpdater />
+          <Layout>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/pricing" element={<Pricing />} />
@@ -99,7 +115,8 @@ export default function App() {
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </Layout>
-      </Router>
-    </AuthProvider>
+        </Router>
+      </AuthProvider>
+    </HelmetProvider>
   );
 }
