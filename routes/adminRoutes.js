@@ -169,13 +169,17 @@ router.get('/all-schedules', ...adminOnly, async (req, res) => {
       SELECT
         s.id, s.subject, s.day_of_week, s.start_time, s.duration_min,
         s.is_active, s.meet_link,
-        t.id   AS teacher_id,
-        t.name AS teacher_name,
+        t.id    AS teacher_id,
+        t.name  AS teacher_name,
+        tp.teacher_code,
         st.id   AS student_id,
-        st.name AS student_name
+        st.name AS student_name,
+        sp.enrollment_no
       FROM schedules s
       JOIN users t  ON s.teacher_id = t.id
       JOIN users st ON s.student_id = st.id
+      LEFT JOIN student_profiles sp ON st.id = sp.user_id
+      LEFT JOIN teacher_profiles tp ON t.id  = tp.user_id
       ORDER BY s.day_of_week ASC, s.start_time ASC
     `);
     res.json(rows);
@@ -212,11 +216,15 @@ router.get('/all-assignments', ...adminOnly, async (req, res) => {
         ta.id, ta.subject, ta.is_active,
         st.id   AS student_id,
         st.name AS student_name,
+        sp.enrollment_no,
         t.id    AS teacher_id,
-        t.name  AS teacher_name
+        t.name  AS teacher_name,
+        tp.teacher_code
       FROM teacher_assignments ta
       JOIN users st ON ta.student_id = st.id
       JOIN users t  ON ta.teacher_id = t.id
+      LEFT JOIN student_profiles sp ON st.id = sp.user_id
+      LEFT JOIN teacher_profiles tp ON t.id  = tp.user_id
       ORDER BY st.name ASC, ta.subject ASC
     `);
     res.json(rows);

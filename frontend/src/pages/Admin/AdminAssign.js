@@ -145,7 +145,8 @@ export default function AdminAssign() {
                   return (
                     <tr key={a.id}>
                       <td style={tblCell}>
-                        <span style={{ color:'#e2e8f0', fontWeight:600 }}>{a.student_name}</span>
+                        <div style={{ color:'#e2e8f0', fontWeight:600 }}>{a.student_name}</div>
+                        {a.enrollment_no && <div style={{ fontSize:'0.7rem', color:'#D4A853', fontWeight:700 }}>{a.enrollment_no}</div>}
                       </td>
                       <td style={tblCell}>
                         <span style={{ background:'rgba(212,168,83,0.12)', color:'#D4A853', padding:'2px 8px', borderRadius:6, fontSize:'0.75rem', fontWeight:600 }}>
@@ -153,7 +154,8 @@ export default function AdminAssign() {
                         </span>
                       </td>
                       <td style={tblCell}>
-                        <span style={{ color:'#94a3b8' }}>{a.teacher_name}</span>
+                        <div style={{ color:'#94a3b8' }}>{a.teacher_name}</div>
+                        {a.teacher_code && <div style={{ fontSize:'0.7rem', color:'#0099B2', fontWeight:700 }}>{a.teacher_code}</div>}
                       </td>
                       <td style={{ ...tblCell, minWidth:200 }}>
                         <select
@@ -162,7 +164,7 @@ export default function AdminAssign() {
                           style={{ ...inp, padding:'7px 10px', fontSize:'0.82rem' }}
                         >
                           {teachers.map(t => (
-                            <option key={t.id} value={t.id}>{t.name}</option>
+                            <option key={t.id} value={t.id}>{t.name}{t.teacher_code ? ` [${t.teacher_code}]` : ''}</option>
                           ))}
                         </select>
                       </td>
