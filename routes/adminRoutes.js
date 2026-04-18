@@ -159,4 +159,86 @@ router.delete('/announcements/:id', ...adminOnly, async (req,res) => {
   catch(e) { res.status(500).json({error:e.message}); }
 });
 
+// ─────────────────────────────────────────────────────────────────────────────
+// FEATURE 1 — Admin views ALL schedules (all teachers)
+// GET /api/admin/all-schedules
+// ─────────────────────────────────────────────────────────────────────────────
+router.get('/all-schedules', ...adminOnly, async (req, res) => {
+  try {
+    const [rows] = await db.query(`
+      SELECT
+        s.id, s.subject, s.day_of_week, s.start_time, s.duration_min,
+        s.is_active, s.meet_link,
+        t.id   AS teacher_id,
+        t.name AS teacher_name,
+        st.id   AS student_id,
+        st.name AS student_name
+      FROM schedules s
+      JOIN users t  ON s.teacher_id = t.id
+      JOIN users st ON s.student_id = st.id
+      ORDER BY s.day_of_week ASC, s.start_time ASC
+    `);
+    res.json(rows);
+  } catch(e) { res.status(500).json({ error: e.message }); }
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// FEATURE 2 — Admin sets a Meet link on a schedule entry
+// PUT /api/admin/schedules/:id/meet-link
+// Body: { meet_link: "https://meet.google.com/xxx" }
+// ─────────────────────────────────────────────────────────────────────────────
+router.put('/schedules/:id/meet-link', ...adminOnly, async (req, res) => {
+  try {
+    const { meet_link } = req.body;
+    // Allow saving empty string to clear the link
+    const link = meet_link ? meet_link.trim() : null;
+    const [result] = await db.query(
+      'UPDATE schedules SET meet_link = ? WHERE id = ?',
+      [link, req.params.id]
+    );
+    if (result.affectedRows === 0) return res.status(404).json({ error: 'Schedule not found' });
+    res.json({ message: link ? 'Meet link saved' : 'Meet link cleared' });
+  } catch(e) { res.status(500).json({ error: e.message }); }
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// FEATURE 3 — Admin lists all teacher assignments (for reassign UI)
+// GET /api/admin/all-assignments
+// ─────────────────────────────────────────────────────────────────────────────
+router.get('/all-assignments', ...adminOnly, async (req, res) => {
+  try {
+    const [rows] = await db.query(`
+      SELECT
+        ta.id, ta.subject, ta.is_active,
+        st.id   AS student_id,
+        st.name AS student_name,
+        t.id    AS teacher_id,
+        t.name  AS teacher_name
+      FROM teacher_assignments ta
+      JOIN users st ON ta.student_id = st.id
+      JOIN users t  ON ta.teacher_id = t.id
+      ORDER BY st.name ASC, ta.subject ASC
+    `);
+    res.json(rows);
+  } catch(e) { res.status(500).json({ error: e.message }); }
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// FEATURE 3 — Admin reassigns a teacher on an existing assignment
+// PUT /api/admin/assignments/:id/reassign
+// Body: { teacher_id: 5 }
+// ─────────────────────────────────────────────────────────────────────────────
+router.put('/assignments/:id/reassign', ...adminOnly, async (req, res) => {
+  try {
+    const { teacher_id } = req.body;
+    if (!teacher_id) return res.status(400).json({ error: 'teacher_id required' });
+    const [result] = await db.query(
+      'UPDATE teacher_assignments SET teacher_id = ? WHERE id = ?',
+      [teacher_id, req.params.id]
+    );
+    if (result.affectedRows === 0) return res.status(404).json({ error: 'Assignment not found' });
+    res.json({ message: 'Teacher reassigned' });
+  } catch(e) { res.status(500).json({ error: e.message }); }
+});
+
 module.exports = router;
