@@ -15,14 +15,15 @@ export default function AdminDashboard() {
   }, []);
 
   const quickLinks = [
-    { to: '/admin/leads', label: 'Manage Leads', icon: '🎯', desc: 'View & follow up on demos' },
-    { to: '/admin/users', label: 'Manage Users', icon: '👥', desc: 'Approve & manage accounts' },
-    { to: '/admin/assign', label: 'Assign Teachers', icon: '🔗', desc: 'Pair teachers with students' },
-    { to: '/admin/tests', label: 'Manage Tests', icon: '📝', desc: 'Create & publish tests' },
-    { to: '/admin/pricing', label: 'Edit Pricing', icon: '💰', desc: 'Update plans & prices' },
-    { to: '/admin/settings', label: 'Site Settings', icon: '⚙️', desc: 'Contact, social, WhatsApp' },
-    { to: '/admin/workshop', label: 'Workshop', icon: '🎓', desc: 'Manage sessions' },
-    { to: '/admin/women', label: "Women's", icon: '👩', desc: 'Review applicants' },
+    { to: '/admin/leads',           label: 'Manage Leads',     icon: '🎯', desc: 'View & follow up on demos' },
+    { to: '/admin/users',           label: 'Manage Users',     icon: '👥', desc: 'Approve & manage accounts' },
+    { to: '/admin/assign',          label: 'Assign Teachers',  icon: '🔗', desc: 'Pair teachers with students' },
+    { to: '/admin/tests',           label: 'Manage Tests',     icon: '📝', desc: 'Create & publish tests' },
+    { to: '/admin/pricing',         label: 'Edit Pricing',     icon: '💰', desc: 'Update plans & prices' },
+    { to: '/admin/settings',        label: 'Site Settings',    icon: '⚙️', desc: 'Contact, social, WhatsApp' },
+    { to: '/admin/workshop',        label: 'Workshop',         icon: '🎓', desc: 'Manage sessions' },
+    { to: '/admin/women',           label: "Women's",          icon: '👩', desc: 'Review applicants' },
+    { to: '/admin/accountability',  label: 'Accountability',   icon: '📊', desc: 'Teacher tracking & alerts' },
   ];
 
   return (
@@ -33,11 +34,11 @@ export default function AdminDashboard() {
           {stats && (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(140px,1fr))', gap: 12, marginBottom: 28 }}>
               {[
-                { label: 'Students', value: stats.students, icon: '👨‍🎓', link: '/admin/users' },
-                { label: 'Teachers', value: stats.teachers, icon: '👨‍🏫', link: '/admin/users' },
-                { label: 'New Leads', value: stats.new_leads, icon: '🎯', link: '/admin/leads' },
-                { label: 'Revenue', value: `₹${Number(stats.total_revenue||0).toLocaleString('en-IN')}`, icon: '💰', link: '/admin/payments' },
-                { label: 'Pending', value: stats.pending_approvals, icon: '⏳', link: '/admin/users' },
+                { label: 'Students', value: stats.students,                                                         icon: '👨‍🎓', link: '/admin/users' },
+                { label: 'Teachers', value: stats.teachers,                                                         icon: '👨‍🏫', link: '/admin/users' },
+                { label: 'New Leads', value: stats.new_leads,                                                       icon: '🎯',  link: '/admin/leads' },
+                { label: 'Revenue',  value: `₹${Number(stats.total_revenue||0).toLocaleString('en-IN')}`,           icon: '💰',  link: '/admin/payments' },
+                { label: 'Pending',  value: stats.pending_approvals,                                                icon: '⏳',  link: '/admin/users' },
               ].map(s => (
                 <Link key={s.label} to={s.link} style={{ textDecoration: 'none' }}>
                   <div style={{ ...card, padding: '16px 14px', display: 'flex', alignItems: 'center', gap: 12 }}>

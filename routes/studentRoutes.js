@@ -2,9 +2,10 @@ const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
 const { authenticate, requireRole } = require('../middleware/auth');
+
 const auth = [authenticate, requireRole('student', 'admin')];
 
-// GET /api/student/dashboard - Dashboard overview
+// GET /api/student/dashboard
 router.get('/dashboard', ...auth, async (req, res) => {
   try {
     const uid = req.user.id;
@@ -43,9 +44,7 @@ router.get('/schedule', ...auth, async (req, res) => {
        WHERE s.student_id = ? AND s.is_active = 1 ORDER BY s.day_of_week, s.start_time`, [req.user.id]
     );
     res.json(rows);
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch schedule' });
-  }
+  } catch (err) { res.status(500).json({ error: 'Failed to fetch schedule' }); }
 });
 
 // GET /api/student/homework
@@ -56,9 +55,7 @@ router.get('/homework', ...auth, async (req, res) => {
        WHERE h.student_id = ? ORDER BY h.due_date ASC`, [req.user.id]
     );
     res.json(rows);
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch homework' });
-  }
+  } catch (err) { res.status(500).json({ error: 'Failed to fetch homework' }); }
 });
 
 // POST /api/student/homework/:id/submit
@@ -70,9 +67,7 @@ router.post('/homework/:id/submit', ...auth, async (req, res) => {
       ['submitted', submission_text || '', req.params.id, req.user.id]
     );
     res.json({ message: 'Homework submitted' });
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to submit homework' });
-  }
+  } catch (err) { res.status(500).json({ error: 'Failed to submit homework' }); }
 });
 
 // GET /api/student/progress
@@ -83,9 +78,7 @@ router.get('/progress', ...auth, async (req, res) => {
        WHERE p.student_id = ? ORDER BY p.report_date DESC LIMIT 20`, [req.user.id]
     );
     res.json(rows);
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch progress' });
-  }
+  } catch (err) { res.status(500).json({ error: 'Failed to fetch progress' }); }
 });
 
 // GET /api/student/test-results
@@ -96,9 +89,7 @@ router.get('/test-results', ...auth, async (req, res) => {
        WHERE tr.student_id = ? ORDER BY tr.created_at DESC`, [req.user.id]
     );
     res.json(rows);
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch test results' });
-  }
+  } catch (err) { res.status(500).json({ error: 'Failed to fetch test results' }); }
 });
 
 // GET /api/student/attendance
@@ -109,12 +100,10 @@ router.get('/attendance', ...auth, async (req, res) => {
        WHERE a.student_id = ? ORDER BY a.class_date DESC`, [req.user.id]
     );
     res.json(rows);
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch attendance' });
-  }
+  } catch (err) { res.status(500).json({ error: 'Failed to fetch attendance' }); }
 });
 
-// POST /api/student/doubt - Submit a doubt
+// POST /api/student/doubt
 router.post('/doubt', ...auth, async (req, res) => {
   try {
     const { subject, question, teacher_id } = req.body;
@@ -124,9 +113,7 @@ router.post('/doubt', ...auth, async (req, res) => {
       [req.user.id, teacher_id || null, subject || '', question, 'pending']
     );
     res.status(201).json({ message: 'Doubt submitted' });
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to submit doubt' });
-  }
+  } catch (err) { res.status(500).json({ error: 'Failed to submit doubt' }); }
 });
 
 // GET /api/student/doubts
@@ -137,9 +124,7 @@ router.get('/doubts', ...auth, async (req, res) => {
        WHERE d.student_id = ? ORDER BY d.created_at DESC`, [req.user.id]
     );
     res.json(rows);
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch doubts' });
-  }
+  } catch (err) { res.status(500).json({ error: 'Failed to fetch doubts' }); }
 });
 
 // GET /api/student/notes
@@ -150,9 +135,7 @@ router.get('/notes', ...auth, async (req, res) => {
        WHERE n.student_id = ? OR n.is_public = 1 ORDER BY n.created_at DESC`, [req.user.id]
     );
     res.json(rows);
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch notes' });
-  }
+  } catch (err) { res.status(500).json({ error: 'Failed to fetch notes' }); }
 });
 
 // GET /api/student/feedback
@@ -163,19 +146,71 @@ router.get('/feedback', ...auth, async (req, res) => {
        WHERE f.student_id = ? ORDER BY f.created_at DESC`, [req.user.id]
     );
     res.json(rows);
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch feedback' });
-  }
+  } catch (err) { res.status(500).json({ error: 'Failed to fetch feedback' }); }
 });
 
-// PUT /api/student/profile - Update profile
+// PUT /api/student/profile
 router.put('/profile', ...auth, async (req, res) => {
   try {
     const { name, phone } = req.body;
     await db.query('UPDATE users SET name = ?, phone = ? WHERE id = ?', [name, phone, req.user.id]);
     res.json({ message: 'Profile updated' });
+  } catch (err) { res.status(500).json({ error: 'Failed to update profile' }); }
+});
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SYLLABUS PROGRESS  — student view (read-only)
+// GET /api/student/syllabus
+// Returns full syllabus tree for this student, from ALL their teachers
+// ═══════════════════════════════════════════════════════════════════════════════
+router.get('/syllabus', ...auth, async (req, res) => {
+  try {
+    const uid = req.user.id;
+
+    const [subjects] = await db.query(
+      `SELECT ss.*, u.name as teacher_name
+       FROM syllabus_subjects ss
+       JOIN users u ON ss.teacher_id = u.id
+       WHERE ss.student_id = ?
+       ORDER BY ss.subject_name`,
+      [uid]
+    );
+
+    for (const sub of subjects) {
+      const [chapters] = await db.query(
+        `SELECT * FROM syllabus_chapters WHERE subject_id = ? ORDER BY sort_order, id`,
+        [sub.id]
+      );
+      for (const ch of chapters) {
+        const [subtopics] = await db.query(
+          `SELECT * FROM syllabus_subtopics WHERE chapter_id = ? ORDER BY sort_order, id`,
+          [ch.id]
+        );
+        ch.subtopics = subtopics;
+        // per-chapter progress
+        ch.total = subtopics.length;
+        ch.completed = subtopics.filter(s => s.status === 'completed').length;
+      }
+      sub.chapters = chapters;
+      // per-subject totals
+      const allSub = chapters.flatMap(c => c.subtopics);
+      sub.total = allSub.length;
+      sub.completed = allSub.filter(s => s.status === 'completed').length;
+    }
+
+    // Also attach recent class topics from attendance
+    const [recentTopics] = await db.query(
+      `SELECT a.class_date, a.subject, a.topic_taught, a.sub_topic, a.class_rating, u.name as teacher_name
+       FROM attendance a JOIN users u ON a.teacher_id = u.id
+       WHERE a.student_id = ? AND a.topic_taught IS NOT NULL
+       ORDER BY a.class_date DESC LIMIT 10`,
+      [uid]
+    );
+
+    res.json({ subjects, recentTopics });
   } catch (err) {
-    res.status(500).json({ error: 'Failed to update profile' });
+    console.error('student syllabus error:', err.message);
+    res.status(500).json({ error: 'Failed to fetch syllabus' });
   }
 });
 

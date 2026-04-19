@@ -1,13 +1,10 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { HelmetProvider, Helmet } from 'react-helmet-async';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
-
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import WhatsAppButton from './components/WhatsAppButton';
 import ChatBot from './components/ChatBot';
-
 import Home from './pages/Home';
 import Pricing from './pages/Pricing';
 import PracticeTests from './pages/PracticeTests';
@@ -22,10 +19,8 @@ import BlogPost from './pages/BlogPost';
 import Materials from './pages/Materials';
 import AdminBlog from './pages/Admin/AdminBlog';
 import AdminMaterials from './pages/Admin/AdminMaterials';
-
 import StudentDashboard from './pages/StudentDashboard';
 import TeacherDashboard from './pages/TeacherDashboard';
-
 import AdminDashboard from './pages/Admin/AdminDashboard';
 import AdminUsers from './pages/Admin/AdminUsers';
 import AdminPricing from './pages/Admin/AdminPricing';
@@ -39,10 +34,11 @@ import AdminWomen from './pages/Admin/AdminWomen';
 import AdminAssign from './pages/Admin/AdminAssign';
 import AdminSchedule from './pages/Admin/AdminSchedule';
 import AdminAnnouncements from './pages/Admin/AdminAnnouncements';
+import Accountability from './pages/Admin/Accountability';
 
 function RequireAuth({ children, role }) {
   const { user, loading } = useAuth();
-  if (loading) return <div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'100vh'}}><div className="spinner"/></div>;
+  if (loading) return <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}><div className="spinner" /></div>;
   if (!user) return <Navigate to="/login" replace />;
   if (role && user.role !== role && user.role !== 'admin') return <Navigate to="/" replace />;
   return children;
@@ -62,26 +58,11 @@ function Layout({ children }) {
   );
 }
 
-// Auto-sets correct canonical URL for every public page — fixes "Duplicate without canonical"
-function CanonicalUpdater() {
-  const { pathname } = useLocation();
-  const isDashboard = pathname.startsWith('/dashboard') || pathname.startsWith('/admin');
-  if (isDashboard) return null;
-  const canonical = 'https://teachs.in' + pathname;
-  return (
-    <Helmet>
-      <link rel="canonical" href={canonical} />
-    </Helmet>
-  );
-}
-
 export default function App() {
   return (
-    <HelmetProvider>
-      <AuthProvider>
-        <Router>
-          <CanonicalUpdater />
-          <Layout>
+    <AuthProvider>
+      <Router>
+        <Layout>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/pricing" element={<Pricing />} />
@@ -90,11 +71,11 @@ export default function App() {
             <Route path="/mentor-workshop" element={<MentorWorkshop />} />
             <Route path="/womens-program" element={<WomensProgram />} />
             <Route path="/become-tutor" element={<BecomeTutor />} />
-          <Route path="/blog" element={<Blog />} />
-          <Route path="/blog/:slug" element={<BlogPost />} />
-          <Route path="/materials" element={<Materials />} />
-          <Route path="/admin/blog" element={<AdminBlog />} />
-          <Route path="/admin/materials" element={<AdminMaterials />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:slug" element={<BlogPost />} />
+            <Route path="/materials" element={<Materials />} />
+            <Route path="/admin/blog" element={<AdminBlog />} />
+            <Route path="/admin/materials" element={<AdminMaterials />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/dashboard/student" element={<RequireAuth role="student"><StudentDashboard /></RequireAuth>} />
@@ -112,11 +93,11 @@ export default function App() {
             <Route path="/admin/assign" element={<RequireAuth role="admin"><AdminAssign /></RequireAuth>} />
             <Route path="/admin/schedule" element={<RequireAuth role="admin"><AdminSchedule /></RequireAuth>} />
             <Route path="/admin/announcements" element={<RequireAuth role="admin"><AdminAnnouncements /></RequireAuth>} />
+            <Route path="/admin/accountability" element={<RequireAuth role="admin"><Accountability /></RequireAuth>} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </Layout>
-        </Router>
-      </AuthProvider>
-    </HelmetProvider>
+      </Router>
+    </AuthProvider>
   );
 }
