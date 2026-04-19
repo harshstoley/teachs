@@ -238,15 +238,28 @@ router.get('/accountability', ...adminOnly, async (req, res) => {
     const result = [];
 
     for (const t of teachers) {
-      // Attendance records this period
-      const [[attStats]] = await db.query(
-        `SELECT
-           COUNT(*) AS total_attendance,
-           SUM(CASE WHEN topic_taught IS NOT NULL AND topic_taught != '' THEN 1 ELSE 0 END) AS with_topic
-         FROM attendance
-         WHERE teacher_id = ? AND class_date >= ?`,
-        [t.id, sinceStr]
-      );
+      // Attendance records this period — try with topic_taught, fallback without
+      let attStats = { total_attendance: 0, with_topic: 0 };
+      try {
+        const [[a]] = await db.query(
+          `SELECT
+             COUNT(*) AS total_attendance,
+             SUM(CASE WHEN topic_taught IS NOT NULL AND topic_taught != '' THEN 1 ELSE 0 END) AS with_topic
+           FROM attendance
+           WHERE teacher_id = ? AND class_date >= ?`,
+          [t.id, sinceStr]
+        );
+        attStats = a;
+      } catch (e) {
+        // topic_taught column may not exist yet — fallback
+        try {
+          const [[a]] = await db.query(
+            `SELECT COUNT(*) AS total_attendance, 0 AS with_topic FROM attendance WHERE teacher_id = ? AND class_date >= ?`,
+            [t.id, sinceStr]
+          );
+          attStats = a;
+        } catch (e2) { /* ignore */ }
+      }
 
       // Students this teacher has
       const [[studentCount]] = await db.query(
@@ -254,17 +267,21 @@ router.get('/accountability', ...adminOnly, async (req, res) => {
         [t.id]
       );
 
-      // Syllabus coverage: completed/total subtopics
-      const [[syllabusStats]] = await db.query(
-        `SELECT
-           COUNT(*) AS total_subtopics,
-           SUM(CASE WHEN st.status = 'completed' THEN 1 ELSE 0 END) AS completed_subtopics
-         FROM syllabus_subjects ss
-         JOIN syllabus_chapters sc ON sc.subject_id = ss.id
-         JOIN syllabus_subtopics st ON st.chapter_id = sc.id
-         WHERE ss.teacher_id = ?`,
-        [t.id]
-      );
+      // Syllabus coverage — safe if tables don't exist yet (migration not run)
+      let syllabusStats = { total_subtopics: 0, completed_subtopics: 0 };
+      try {
+        const [[ss]] = await db.query(
+          `SELECT
+             COUNT(*) AS total_subtopics,
+             SUM(CASE WHEN st.status = 'completed' THEN 1 ELSE 0 END) AS completed_subtopics
+           FROM syllabus_subjects ss
+           JOIN syllabus_chapters sc ON sc.subject_id = ss.id
+           JOIN syllabus_subtopics st ON st.chapter_id = sc.id
+           WHERE ss.teacher_id = ?`,
+          [t.id]
+        );
+        syllabusStats = ss;
+      } catch (e) { /* tables may not exist yet — run seed_migration.js */ }
 
       // Low-attendance students (< 70% in last 30 days)
       const [lowAtt] = await db.query(

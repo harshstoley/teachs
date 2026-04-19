@@ -147,13 +147,15 @@ function SyllabusTab({ students, showMsg }) {
     try {
       const r = await api.get(`/teacher/syllabus?student_id=${sid}`);
       setSyllabus(r.data);
-      // auto-expand all
       const exp = {};
       r.data.forEach(s => { exp[s.id] = true; });
       setExpandedSubjects(exp);
-    } catch { showMsg('Failed to load syllabus', 'error'); }
-    finally { setSylLoading(false); }
-  }, [showMsg]);
+    } catch (e) {
+      console.error('syllabus load error:', e?.response?.data || e.message);
+    } finally {
+      setSylLoading(false);
+    }
+  }, []); // eslint-disable-line
 
   useEffect(() => { if (selectedStudent) loadSyllabus(selectedStudent); }, [selectedStudent, loadSyllabus]);
 
