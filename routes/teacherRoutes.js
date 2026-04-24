@@ -12,29 +12,29 @@ router.get('/dashboard', ...auth, async (req, res) => {
     try {
       [students] = await db.query(
         `SELECT DISTINCT u.id, u.name, sp.student_class, sp.enrollment_no, ta.subject
-         FROM teacher_assignments ta JOIN users u ON ta.student_id = u.id
-         LEFT JOIN student_profiles sp ON u.id = sp.user_id
-         WHERE ta.teacher_id = ? AND ta.is_active = 1`, [tid]
+        FROM teacher_assignments ta JOIN users u ON ta.student_id = u.id
+        LEFT JOIN student_profiles sp ON u.id = sp.user_id
+        WHERE ta.teacher_id = ? AND ta.is_active = 1`, [tid]
       );
     } catch(e) {
       [students] = await db.query(
         `SELECT DISTINCT u.id, u.name, sp.student_class, ta.subject
-         FROM teacher_assignments ta JOIN users u ON ta.student_id = u.id
-         LEFT JOIN student_profiles sp ON u.id = sp.user_id
-         WHERE ta.teacher_id = ? AND ta.is_active = 1`, [tid]
+        FROM teacher_assignments ta JOIN users u ON ta.student_id = u.id
+        LEFT JOIN student_profiles sp ON u.id = sp.user_id
+        WHERE ta.teacher_id = ? AND ta.is_active = 1`, [tid]
       );
     }
     const [schedule] = await db.query(
       `SELECT s.*, u.name as student_name FROM schedules s JOIN users u ON s.student_id = u.id
-       WHERE s.teacher_id = ? AND s.is_active = 1 ORDER BY s.day_of_week, s.start_time`, [tid]
+      WHERE s.teacher_id = ? AND s.is_active = 1 ORDER BY s.day_of_week, s.start_time`, [tid]
     );
     const [pendingDoubts] = await db.query(
       `SELECT d.*, u.name as student_name FROM doubts d JOIN users u ON d.student_id = u.id
-       WHERE d.teacher_id = ? AND d.status = 'pending'`, [tid]
+      WHERE d.teacher_id = ? AND d.status = 'pending'`, [tid]
     );
     const [homework] = await db.query(
       `SELECT h.*, u.name as student_name FROM homework h JOIN users u ON h.student_id = u.id
-       WHERE h.teacher_id = ? ORDER BY h.due_date DESC LIMIT 10`, [tid]
+      WHERE h.teacher_id = ? ORDER BY h.due_date DESC LIMIT 10`, [tid]
     );
     res.json({ students, schedule, pendingDoubts, homework });
   } catch (err) {
@@ -65,33 +65,33 @@ router.get('/homework-all', ...auth, async (req, res) => {
     let rows;
     try {
       [rows] = await db.query(
-        `SELECT h.*, u.name as student_name, sp.enrollment_no FROM homework h 
-         JOIN users u ON h.student_id = u.id
-         LEFT JOIN student_profiles sp ON u.id = sp.user_id
-         WHERE h.teacher_id = ? ORDER BY h.id DESC`, [req.user.id]
+        `SELECT h.*, u.name as student_name, sp.enrollment_no FROM homework h
+        JOIN users u ON h.student_id = u.id
+        LEFT JOIN student_profiles sp ON u.id = sp.user_id
+        WHERE h.teacher_id = ? ORDER BY h.id DESC`, [req.user.id]
       );
     } catch(e) {
       [rows] = await db.query(
         `SELECT h.*, u.name as student_name FROM homework h JOIN users u ON h.student_id = u.id
-         WHERE h.teacher_id = ? ORDER BY h.id DESC`, [req.user.id]
+        WHERE h.teacher_id = ? ORDER BY h.id DESC`, [req.user.id]
       );
     }
     res.json(rows);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// GET /api/teacher/homework-submitted — only submitted ones
+// GET /api/teacher/homework-submitted
 router.get('/homework-submitted', ...auth, async (req, res) => {
   try {
     const [rows] = await db.query(
       `SELECT h.*, u.name as student_name FROM homework h JOIN users u ON h.student_id = u.id
-       WHERE h.teacher_id = ? AND h.status = 'submitted' ORDER BY h.submitted_at DESC`, [req.user.id]
+      WHERE h.teacher_id = ? AND h.status = 'submitted' ORDER BY h.submitted_at DESC`, [req.user.id]
     );
     res.json(rows);
   } catch (err) { res.status(500).json({ error: 'Failed to fetch homework' }); }
 });
 
-// PUT /api/teacher/homework/:id — edit homework details
+// PUT /api/teacher/homework/:id
 router.put('/homework/:id', ...auth, async (req, res) => {
   try {
     const { title, description, due_date, status } = req.body;
@@ -103,7 +103,7 @@ router.put('/homework/:id', ...auth, async (req, res) => {
   } catch (err) { res.status(500).json({ error: 'Failed to update homework' }); }
 });
 
-// PUT /api/teacher/homework/:id/grade — grade homework
+// PUT /api/teacher/homework/:id/grade
 router.put('/homework/:id/grade', ...auth, async (req, res) => {
   try {
     const { grade, remarks } = req.body;
@@ -121,23 +121,23 @@ router.get('/doubts-for-me', ...auth, async (req, res) => {
     let rows;
     try {
       [rows] = await db.query(
-        `SELECT d.*, u.name as student_name, sp.enrollment_no FROM doubts d 
-         JOIN users u ON d.student_id = u.id
-         LEFT JOIN student_profiles sp ON u.id = sp.user_id
-         WHERE d.teacher_id = ? ORDER BY FIELD(d.status,'pending','answered'), d.created_at DESC`,
+        `SELECT d.*, u.name as student_name, sp.enrollment_no FROM doubts d
+        JOIN users u ON d.student_id = u.id
+        LEFT JOIN student_profiles sp ON u.id = sp.user_id
+        WHERE d.teacher_id = ? ORDER BY FIELD(d.status,'pending','answered'), d.created_at DESC`,
         [req.user.id]
       );
     } catch(e) {
       [rows] = await db.query(
         `SELECT d.*, u.name as student_name FROM doubts d JOIN users u ON d.student_id = u.id
-         WHERE d.teacher_id = ? ORDER BY d.created_at DESC`, [req.user.id]
+        WHERE d.teacher_id = ? ORDER BY d.created_at DESC`, [req.user.id]
       );
     }
     res.json(rows);
   } catch (err) { res.status(500).json({ error: 'Failed to fetch doubts' }); }
 });
 
-// PUT /api/teacher/doubts/:id — answer a doubt
+// PUT /api/teacher/doubts/:id
 router.put('/doubts/:id', ...auth, async (req, res) => {
   try {
     const { answer, status } = req.body;
@@ -205,7 +205,7 @@ router.get('/my-schedules', ...auth, async (req, res) => {
   try {
     const [rows] = await db.query(
       `SELECT s.*, u.name as student_name FROM schedules s JOIN users u ON s.student_id = u.id
-       WHERE s.teacher_id = ? AND s.is_active = 1 ORDER BY s.day_of_week, s.start_time`, [req.user.id]
+      WHERE s.teacher_id = ? AND s.is_active = 1 ORDER BY s.day_of_week, s.start_time`, [req.user.id]
     );
     res.json(rows);
   } catch (err) { res.status(500).json({ error: 'Failed to fetch schedules' }); }
@@ -238,7 +238,7 @@ router.post('/schedule-class', ...auth, async (req, res) => {
     if (!student_id) return res.status(400).json({ error: 'Student required' });
     await db.query(
       `INSERT INTO schedules (student_id, teacher_id, subject, day_of_week, start_time, duration_min, is_active)
-       VALUES (?,?,?,?,?,?,1)`,
+      VALUES (?,?,?,?,?,?,1)`,
       [student_id, req.user.id, subject || '', day_of_week || 1, start_time || '17:00', duration_min || 60]
     );
     res.status(201).json({ message: 'Class scheduled' });
@@ -252,21 +252,70 @@ router.get('/students', ...auth, async (req, res) => {
     try {
       [rows] = await db.query(
         `SELECT DISTINCT u.id, u.name, u.email, u.phone, sp.student_class, sp.parent_name, sp.parent_phone, sp.enrollment_no, ta.subject
-         FROM teacher_assignments ta JOIN users u ON ta.student_id = u.id
-         LEFT JOIN student_profiles sp ON u.id = sp.user_id
-         WHERE ta.teacher_id = ? AND ta.is_active = 1`, [req.user.id]
+        FROM teacher_assignments ta JOIN users u ON ta.student_id = u.id
+        LEFT JOIN student_profiles sp ON u.id = sp.user_id
+        WHERE ta.teacher_id = ? AND ta.is_active = 1`, [req.user.id]
       );
     } catch(e) {
-      // fallback if enrollment_no column doesn't exist yet
       [rows] = await db.query(
         `SELECT DISTINCT u.id, u.name, u.email, u.phone, sp.student_class, sp.parent_name, sp.parent_phone, ta.subject
-         FROM teacher_assignments ta JOIN users u ON ta.student_id = u.id
-         LEFT JOIN student_profiles sp ON u.id = sp.user_id
-         WHERE ta.teacher_id = ? AND ta.is_active = 1`, [req.user.id]
+        FROM teacher_assignments ta JOIN users u ON ta.student_id = u.id
+        LEFT JOIN student_profiles sp ON u.id = sp.user_id
+        WHERE ta.teacher_id = ? AND ta.is_active = 1`, [req.user.id]
       );
     }
     res.json(rows);
   } catch (err) { res.status(500).json({ error: 'Failed to fetch students' }); }
+});
+
+// ─── SYLLABUS ROUTES (NEW) ────────────────────────────────────────────────────
+
+// GET /api/teacher/syllabus
+router.get('/syllabus', ...auth, async (req, res) => {
+  try {
+    const [rows] = await db.query(
+      `SELECT s.*, u.name AS student_name
+       FROM syllabus s
+       JOIN users u ON s.student_id = u.id
+       WHERE s.teacher_id = ?
+       ORDER BY u.name, s.subject, s.chapter, s.topic, s.subtopic`,
+      [req.user.id]
+    );
+    res.json(rows);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// POST /api/teacher/syllabus
+router.post('/syllabus', ...auth, async (req, res) => {
+  try {
+    const { student_id, subject, chapter, topic, subtopic, status } = req.body;
+    if (!student_id || !subject) return res.status(400).json({ error: 'Student and subject required' });
+    const [result] = await db.query(
+      'INSERT INTO syllabus (teacher_id, student_id, subject, chapter, topic, subtopic, status) VALUES (?,?,?,?,?,?,?)',
+      [req.user.id, student_id, subject, chapter || '', topic || '', subtopic || '', status || 'not_started']
+    );
+    res.status(201).json({ message: 'Syllabus item added', id: result.insertId });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// PUT /api/teacher/syllabus/:id
+router.put('/syllabus/:id', ...auth, async (req, res) => {
+  try {
+    const { status } = req.body;
+    await db.query(
+      'UPDATE syllabus SET status=? WHERE id=? AND teacher_id=?',
+      [status, req.params.id, req.user.id]
+    );
+    res.json({ message: 'Status updated' });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// DELETE /api/teacher/syllabus/:id
+router.delete('/syllabus/:id', ...auth, async (req, res) => {
+  try {
+    await db.query('DELETE FROM syllabus WHERE id=? AND teacher_id=?', [req.params.id, req.user.id]);
+    res.json({ message: 'Deleted' });
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 module.exports = router;
